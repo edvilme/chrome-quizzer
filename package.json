@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "linkedom": "^0.18.12"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.10"
+  },
+  "scripts": {
+    "build": "esbuild src/service_worker.js --bundle --minify --sourcemap --outdir=dist"
+  }
+}

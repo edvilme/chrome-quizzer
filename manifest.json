@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome Quizzer",
+  "version": "0.1.0",
+  "description": "Reader view and instant comprehension quizzes generated locally with Chrome's on-device LLM.",
+  "action": {
+    "default_title": "Click to open Quizzer",
+    "default_icon": "assets/icon.png"
+  },
+  "permissions": [
+    "sidePanel",
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "side_panel": {
+    "default_path": "src/sidepanel.html"
+  },
+  "background": {
+    "service_worker": "dist/service_worker.js"
+  },
+  "icons": {
+    "128": "assets/icon.png"
+  }
+}
