@@ -17,7 +17,7 @@
     "<all_urls>"
   ],
   "side_panel": {
-    "default_path": "src/sidepanel.html"
+    "default_path": "static/sidepanel.html"
   },
   "background": {
     "service_worker": "dist/service_worker.js"
