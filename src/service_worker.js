@@ -3,7 +3,7 @@ import { DOMParser } from "linkedom";
 
 async function getSummarizer() {
   const summarizerAvailability = await Summarizer.availability();
-  if (!summarizerAvailability.downloadable && !summarizerAvailability.downloading) {
+  if (summarizerAvailability != "downloadable" && summarizerAvailability != "downloading") {
     console.error('Summarizer not available:', summarizerAvailability);
     return null;
   }
@@ -22,7 +22,7 @@ async function getSummarizer() {
 
 async function getLanguageModel() {
   const modelAvailability = await LanguageModel.availability();
-  if (!modelAvailability.downloadable && !modelAvailability.downloading) {
+  if (modelAvailability != "downloadable" && modelAvailability != "downloading") {
     console.error('Language model not available:', modelAvailability);
     return null;
   }
