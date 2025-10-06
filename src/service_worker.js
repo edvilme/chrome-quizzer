@@ -1,4 +1,4 @@
-import { Readability } from "@mozilla/readability";
+import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import { DOMParser } from "linkedom";
 
 async function getSummarizer() {
@@ -51,7 +51,7 @@ async function getCurrentTab() {
   return { ...tab, document: tabDOM[0].result };
 }
 
-async function generateQuiz(message, sender, sendResponse) {
+async function generateData(message, sender, sendResponse) {
   // Get tab and its content
   const tab = await getCurrentTab();
   if (!tab) {
@@ -61,6 +61,10 @@ async function generateQuiz(message, sender, sendResponse) {
   const tabDOM = new DOMParser().parseFromString(tab.document, 'text/html');
 
   // Extract main article content using Readability
+  if (!isProbablyReaderable(tabDOM)) {
+    sendResponse({ success: false, error: 'Page not readerable' });
+    return;
+  }
   const article = new Readability(tabDOM).parse();
 
   // Summarize
@@ -72,8 +76,7 @@ async function generateQuiz(message, sender, sendResponse) {
   const quiz = languageModel.prompt("Generate a quiz based on the following article:\n\n" + article.textContent + "\n\nQuiz:");
 
   // For now return a placeholder quiz; replace with real generation if needed
-  sendResponse({ success: true, article: article.textContent });
-  console.log('Service worker: quiz response sent');
+  sendResponse({ success: true, article: article.textContent, summary, quiz });
 }
 
 
@@ -88,7 +91,7 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 // Listen for messages from the side panel (or other extension pages)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type == 'getTabArticle') {
-    generateQuiz(message, sender, sendResponse);
+    generateData(message, sender, sendResponse);
     return true; // Indicate that we will respond asynchronously
   }
 });
