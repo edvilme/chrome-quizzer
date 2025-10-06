@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('get-article');
+  const summary = document.getElementById('summary');
+  const quiz = document.getElementById('quiz');
   const status = document.getElementById('status');
-  const article = document.getElementById('article');
 
   btn.addEventListener('click', () => {
     status.textContent = 'Requesting article from active tab...';
-    article.textContent = '';
     chrome.runtime.sendMessage({ type: 'getTabArticle' }, (resp) => {
       if (chrome.runtime.lastError) {
         status.textContent = 'Error: ' + chrome.runtime.lastError.message;
@@ -19,8 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
         status.textContent = 'Error: ' + (resp.error || 'unknown');
         return;
       }
-      status.textContent = 'Article extracted';
-      article.textContent = resp.article || '(no article text found)';
+      // status.textContent = 'Article extracted';
+      summary.textContent = resp.summary || '(no summary found)';
+      quiz.textContent = resp.quiz || '(no quiz found)';
     });
   });
 });

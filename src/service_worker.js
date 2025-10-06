@@ -3,7 +3,7 @@ import { DOMParser } from "linkedom";
 
 async function getSummarizer() {
   const summarizerAvailability = await Summarizer.availability();
-  if (summarizerAvailability != "downloadable" && summarizerAvailability != "downloading") {
+  if (summarizerAvailability != "downloadable" && summarizerAvailability != "downloading" && summarizerAvailability != "available") {
     console.error('Summarizer not available:', summarizerAvailability);
     return null;
   }
@@ -22,7 +22,7 @@ async function getSummarizer() {
 
 async function getLanguageModel() {
   const modelAvailability = await LanguageModel.availability();
-  if (modelAvailability != "downloadable" && modelAvailability != "downloading") {
+  if (modelAvailability != "downloadable" && modelAvailability != "downloading" && modelAvailability != "available") {
     console.error('Language model not available:', modelAvailability);
     return null;
   }
@@ -59,6 +59,7 @@ async function generateData(message, sender, sendResponse) {
     return;
   }
   const tabDOM = new DOMParser().parseFromString(tab.document, 'text/html');
+  console.log('Tab DOM parsed');
 
   // Extract main article content using Readability
   if (!isProbablyReaderable(tabDOM)) {
@@ -67,13 +68,19 @@ async function generateData(message, sender, sendResponse) {
   }
   const article = new Readability(tabDOM).parse();
 
+  console.log('Article extracted');
+
   // Summarize
   const summarizer = await getSummarizer();
   const summary = await summarizer.summarize(article.textContent);
 
+  console.log('Article summarized');
+
   // Language model
   const languageModel = await getLanguageModel();
-  const quiz = languageModel.prompt("Generate a quiz based on the following article:\n\n" + article.textContent + "\n\nQuiz:");
+  const quiz = await languageModel.prompt("Generate a quiz based on the following article:\n\n" + article.textContent + "\n\nQuiz:");
+  
+  console.log('Quiz generated', quiz);
 
   // For now return a placeholder quiz; replace with real generation if needed
   sendResponse({ success: true, article: article.textContent, summary, quiz });
