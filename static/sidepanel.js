@@ -76,7 +76,20 @@ function renderQuestion(question) {
       textContent: option,
     });
     optionsList.appendChild(optionItem);
+    optionItem.addEventListener('click', () => validateAnswer(optionItem, option, question.answer));
   });
 
   return questionDiv;
+}
+
+function validateAnswer(optionItem, selectedOption, correctAnswer) {
+  if (optionItem.textContent === correctAnswer) {
+    optionItem.classList.add('correct');
+  } else if (optionItem.textContent === selectedOption) {
+    optionItem.classList.add('incorrect');
+  }
+  optionItem.parentElement.querySelectorAll('.option').forEach((opt) => {
+    opt.removeEventListener('click', validateAnswer);
+    opt.style.pointerEvents = 'none';
+  });
 }
