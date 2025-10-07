@@ -62,7 +62,10 @@ h1 {
 }
 
 #loading {
-    color: var(--muted);
+    fill: var(--muted);
+    width: 25vmin;
+    height: 25vmin;
+    margin: auto;
 }
 
 /* Content areas */
@@ -118,6 +121,22 @@ hr.strong {
     margin: 20px 0
 }
 
+/* Quiz question styling */
+.question ul {
+    list-style: none;
+    padding: 0;
+}
+
+.question li {
+    background: var(--pill);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    cursor: pointer;
+    transition: background-color .12s, box-shadow .12s, transform .08s
+}
+
 /* Status-based visibility control */
 body[data-status="empty"] > *,
 body[data-status="loading"] > * {
@@ -133,7 +152,7 @@ body[data-status="loading"] > button {
     background: color-mix(in srgb, var(--accent) 20%, var(--ui));
 }
 body[data-status="loading"] > #loading {
-    display: initial !important;
+    display: block !important;
 }
 body[data-status="loaded"] > #loading {
     display: none !important;

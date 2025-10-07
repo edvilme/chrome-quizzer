@@ -1,26 +1,82 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('get-article');
-  const summary = document.getElementById('summary');
-  const summaryTitle = document.getElementById('summary-title');
-  const quiz = document.getElementById('quiz');
-  const favicon = document.getElementById('tab-favicon');
-  const title = document.getElementById('tab-title');
-
-  document.body.setAttribute('data-status', 'empty');
-
-  btn.addEventListener('click', () => {
-    document.body.setAttribute('data-status', 'loading');
-    chrome.runtime.sendMessage({ type: 'getTabArticle' }, (resp) => {
-      if (chrome.runtime.lastError || !resp || !resp.success) {
-        return;
-      }
-      document.body.setAttribute('data-status', 'loaded');
-      console.log(resp.article)
-      favicon.src = resp.favicon || '';
-      title.textContent = resp.article?.title || 'Tab';
-      summaryTitle.textContent = resp.article?.title || 'Summary';
-      summary.textContent = resp.summary || '(no summary found)';
-      quiz.textContent = resp.quiz || '(no quiz found)';
-    });
-  });
+  const elements = {
+    btn: document.getElementById('get-article'),
+    summary: document.getElementById('summary'),
+    summaryTitle: document.getElementById('summary-title'),
+    quiz: document.getElementById('quiz'),
+    favicon: document.getElementById('tab-favicon'),
+    title: document.getElementById('tab-title'),
+  };
+  initializePage(elements);
+  elements.btn.addEventListener('click', () => handleGenerateQuiz(elements));
 });
+
+/**
+ * Initializes the page by setting the default status.
+ * @param {Object} elements - The DOM elements used in the page.
+ */
+function initializePage(elements) {
+  document.body.setAttribute('data-status', 'empty');
+  handleGenerateQuiz(elements);
+}
+
+/**
+ * Handles action to generate a quiz.
+ * Sends a message to the Chrome runtime to fetch the article data.
+ * @param {Object} elements - The DOM elements used in the page.
+ */
+function handleGenerateQuiz(elements) {
+  document.body.setAttribute('data-status', 'loading');
+  chrome.runtime.sendMessage({ type: 'getTabArticle' }, (resp) => {
+    if (chrome.runtime.lastError || !resp || !resp.success) return;
+    updatePageContent(elements, resp);
+  });
+}
+
+/**
+ * Updates the page content with the fetched article and quiz data.
+ * @param {Object} elements - The DOM elements used in the page.
+ * @param {Object} resp - The response object containing article and quiz data.
+ */
+function updatePageContent(elements, resp) {
+  document.body.setAttribute('data-status', 'loaded');
+  elements.favicon.src = resp.favicon || '';
+  elements.title.textContent = resp.article?.title || 'Tab';
+  elements.summaryTitle.textContent = resp.article?.title || 'Summary';
+  elements.summary.textContent = resp.summary || '(no summary found)';
+
+  // Clear the quiz container before adding new questions
+  elements.quiz.innerHTML = '';
+  resp.quiz?.questions?.forEach((question) => {
+    elements.quiz.appendChild(renderQuestion(question));
+  });
+}
+
+/**
+ * Renders a single quiz question as a DOM element.
+ * @param {Object} question - The question object containing title and options.
+ * @returns {HTMLElement} - The DOM element representing the question.
+ */
+function renderQuestion(question) {
+  const questionDiv = document.createElement('div');
+  questionDiv.className = 'question';
+
+  const questionText = document.createElement('h3');
+  questionText.textContent = question.title;
+  questionDiv.appendChild(questionText);
+
+  const optionsList = document.createElement('ul');
+  optionsList.className = 'options';
+  questionDiv.appendChild(optionsList);
+
+  question.options.forEach((option) => {
+    const optionItem = document.createElement('li');
+    Object.assign(optionItem, {
+      className: 'option',
+      textContent: option,
+    });
+    optionsList.appendChild(optionItem);
+  });
+
+  return questionDiv;
+}
