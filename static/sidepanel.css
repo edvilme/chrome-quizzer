@@ -1,10 +1,91 @@
 :root {
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    
+    /* Light theme colors */
+    --bg-color: #fff;
+    --text-color: #111;
+    --heading-color: #24292f;
+    --status-color: #656d76;
+    --button-bg: #f6f8fa;
+    --button-text: #24292f;
+    --button-border: #d0d7de;
+    --button-hover-bg: #f3f4f6;
+    --button-hover-border: #b1bac4;
+    --button-active-bg: #edeff2;
+}
+
+/* Dark theme colors */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #0d1117;
+        --text-color: #c9d1d9;
+        --heading-color: #c9d1d9;
+        --status-color: #8b949e;
+        --button-bg: #21262d;
+        --button-text: #c9d1d9;
+        --button-border: #30363d;
+        --button-hover-bg: #30363d;
+        --button-hover-border: #8b949e;
+        --button-active-bg: #282e34;
+    }
 }
 
 body {
     margin: 0;
-    padding: 16px;
-    background: #fff;
-    color: #111;
+    padding: 20px;
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+/* Button styling */
+.button-container {
+    margin-bottom: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--button-border);
+    border-radius: 6px;
+    background: var(--button-bg);
+    color: var(--button-text);
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+button:hover {
+    background: var(--button-hover-bg);
+    border-color: var(--button-hover-border);
+}
+
+button:active {
+    background: var(--button-active-bg);
+}
+
+/* Status text - de-emphasized */
+#status {
+    margin-top: 12px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--status-color);
+    font-style: italic;
+}
+
+/* Headings */
+h1 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: var(--heading-color);
+}
+
+/* Content areas */
+#summary,
+#quiz {
+    margin-top: 12px;
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+    line-height: 1.6;
 }
