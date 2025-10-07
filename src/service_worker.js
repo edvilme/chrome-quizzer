@@ -1,5 +1,6 @@
 import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import { DOMParser } from "linkedom";
+import quizSchema from "../schemas/quiz-schema.json" assert { type: "json" };
 
 async function getSummarizer() {
   const summarizerAvailability = await Summarizer.availability();
@@ -26,7 +27,7 @@ async function getLanguageModel() {
     console.error('Language model not available:', modelAvailability);
     return null;
   }
-  
+
   return await LanguageModel.create({
     monitor(m) {
       m.addEventListener('downloadprogress', (e) => {
@@ -34,7 +35,7 @@ async function getLanguageModel() {
       });
     }
   });
-  
+
 }
 
 async function getCurrentTab() {
@@ -80,16 +81,20 @@ async function generateData(message, sender, sendResponse) {
   const summary = await summarizer.summarize(article.textContent);
   console.log('Article summarized');
 
-  const quiz = await languageModel.prompt("Generate a quiz based on the following article:\n\n" + article.textContent + "\n\nQuiz:");
+  const quiz = JSON.parse(await languageModel.prompt("Generate a quiz of 20 questions based on the following article:\n\n" + article.textContent + "\n\nQuiz:",
+    {
+      responseConstraint: quizSchema
+    }
+  ));
   console.log('Quiz generated');
 
   // For now return a placeholder quiz; replace with real generation if needed
-  sendResponse({ 
-    success: true, 
+  sendResponse({
+    success: true,
     favicon,
-    article, 
-    summary, 
-    quiz 
+    article,
+    summary,
+    quiz
   });
 }
 
