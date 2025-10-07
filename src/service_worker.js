@@ -2,54 +2,36 @@ import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import { DOMParser } from "linkedom";
 import quizSchema from "../schemas/quiz-schema.json" assert { type: "json" };
 
-async function getSummarizer() {
-  const summarizerAvailability = await Summarizer.availability();
-  if (summarizerAvailability != "downloadable" && summarizerAvailability != "downloading" && summarizerAvailability != "available") {
-    console.error('Summarizer not available:', summarizerAvailability);
-    return null;
-  }
+async function getModel(type = 'language', options = {}) {
+  const isLanguageModel = type === 'language';
+  const ModelClass = isLanguageModel ? LanguageModel : Summarizer;
 
-  return await Summarizer.create({
-    type: "tldr",
-    length: "long",
-    format: "markdown",
-    monitor(m) {
-      m.addEventListener('downloadprogress', (e) => {
-        console.log(`Summarizer downloaded ${e.loaded * 100}%`);
-      });
-    }
-  });
-}
-
-async function getLanguageModel() {
-  const modelAvailability = await LanguageModel.availability();
+  const modelAvailability = await ModelClass.availability();
   if (modelAvailability != "downloadable" && modelAvailability != "downloading" && modelAvailability != "available") {
-    console.error('Language model not available:', modelAvailability);
+    console.error(`${isLanguageModel ? 'Language model' : 'Summarizer'} not available:`, modelAvailability);
     return null;
   }
 
-  return await LanguageModel.create({
+  return await ModelClass.create({
+    ...options,
     monitor(m) {
       m.addEventListener('downloadprogress', (e) => {
-        console.log(`Language model downloaded ${e.loaded * 100}%`);
+        console.log(`${isLanguageModel ? 'Language model' : 'Summarizer'} downloaded ${e.loaded * 100}%`);
       });
     }
   });
-
 }
 
 async function getCurrentTab() {
   let [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-  if (!tab || !tab.url || !tab.title || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+  if (!tab || !tab.url || !tab.title || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://'))
     return null;
-  }
-
   const tabDOM = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: () => document.documentElement.outerHTML,
   });
 
-  return { ...tab, document: tabDOM[0].result };
+  return { ...tab, tabOuterHtml: tabDOM[0].result };
 }
 
 async function generateData(message, sender, sendResponse) {
@@ -59,7 +41,7 @@ async function generateData(message, sender, sendResponse) {
     sendResponse({ success: false, error: 'No sender tab' });
     return;
   }
-  const tabDOM = new DOMParser().parseFromString(tab.document, 'text/html');
+  const tabDOM = new DOMParser().parseFromString(tab.tabOuterHtml, 'text/html');
   console.log('Tab DOM parsed');
 
   // Extract main article content using Readability
@@ -73,8 +55,12 @@ async function generateData(message, sender, sendResponse) {
   console.log('Article extracted');
 
   // Get models
-  const summarizer = await getSummarizer();
-  const languageModel = await getLanguageModel();
+  const summarizer = await getModel('summarizer');
+  const languageModel = await getModel('language', {
+    type: "tldr",
+    length: "long",
+    format: "markdown"
+  });
   console.log('Models loaded');
 
   // Summarize
@@ -98,7 +84,6 @@ async function generateData(message, sender, sendResponse) {
     return;
   }
 
-  // For now return a placeholder quiz; replace with real generation if needed
   sendResponse({
     success: true,
     favicon,

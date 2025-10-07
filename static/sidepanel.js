@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     title: document.getElementById('tab-title'),
   };
   initializePage(elements);
-  elements.btn.addEventListener('click', () => handleButtonClick(elements));
+  elements.btn.addEventListener('click', () => handleGenerateQuiz(elements));
 });
 
 /**
@@ -17,20 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 function initializePage(elements) {
   document.body.setAttribute('data-status', 'empty');
-  handleButtonClick(elements);
+  handleGenerateQuiz(elements);
 }
 
 /**
- * Handles the click event for the "Get Article" button.
+ * Handles action to generate a quiz.
  * Sends a message to the Chrome runtime to fetch the article data.
  * @param {Object} elements - The DOM elements used in the page.
  */
-function handleButtonClick(elements) {
+function handleGenerateQuiz(elements) {
   document.body.setAttribute('data-status', 'loading');
   chrome.runtime.sendMessage({ type: 'getTabArticle' }, (resp) => {
-    if (chrome.runtime.lastError || !resp || !resp.success) {
-      return;
-    }
+    if (chrome.runtime.lastError || !resp || !resp.success) return;
     updatePageContent(elements, resp);
   });
 }
@@ -42,8 +40,6 @@ function handleButtonClick(elements) {
  */
 function updatePageContent(elements, resp) {
   document.body.setAttribute('data-status', 'loaded');
-  console.log(resp.quiz);
-
   elements.favicon.src = resp.favicon || '';
   elements.title.textContent = resp.article?.title || 'Tab';
   elements.summaryTitle.textContent = resp.article?.title || 'Summary';
