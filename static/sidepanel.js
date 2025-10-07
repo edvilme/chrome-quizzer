@@ -49,6 +49,8 @@ function updatePageContent(elements, resp) {
   elements.summaryTitle.textContent = resp.article?.title || 'Summary';
   elements.summary.textContent = resp.summary || '(no summary found)';
 
+  // Clear the quiz container before adding new questions
+  elements.quiz.innerHTML = '';
   resp.quiz?.questions?.forEach((question) => {
     elements.quiz.appendChild(renderQuestion(question));
   });
