@@ -66,24 +66,31 @@ async function generateData(message, sender, sendResponse) {
     sendResponse({ success: false, error: 'Page not readerable' });
     return;
   }
+  const favicon = tabDOM.querySelector('link[rel="icon"]')?.href || tabDOM.querySelector('link[rel="shortcut icon"]')?.href || null;
   const article = new Readability(tabDOM).parse();
 
   console.log('Article extracted');
 
-  // Summarize
+  // Get models
   const summarizer = await getSummarizer();
-  const summary = await summarizer.summarize(article.textContent);
+  const languageModel = await getLanguageModel();
+  console.log('Models loaded');
 
+  // Summarize
+  const summary = await summarizer.summarize(article.textContent);
   console.log('Article summarized');
 
-  // Language model
-  const languageModel = await getLanguageModel();
   const quiz = await languageModel.prompt("Generate a quiz based on the following article:\n\n" + article.textContent + "\n\nQuiz:");
-  
-  console.log('Quiz generated', quiz);
+  console.log('Quiz generated');
 
   // For now return a placeholder quiz; replace with real generation if needed
-  sendResponse({ success: true, article: article.textContent, summary, quiz });
+  sendResponse({ 
+    success: true, 
+    favicon,
+    article, 
+    summary, 
+    quiz 
+  });
 }
 
 

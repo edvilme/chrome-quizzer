@@ -6,16 +6,20 @@
     <title>Chrome Quizzer Side Panel</title>
     <link href="sidepanel.css" rel="stylesheet">
   </head>
-  <body>
-    <div class="button-container">
-      <button id="get-article">Generate Quiz</button>
+  <body>    
+    <button id="get-article">Generate Quiz</button>
+
+    <object id="loading" data="bouncing-ball.svg" type="image/svg+xml"></object>
+
+    <div id="tab-pill">
+      <img id="tab-favicon" src="" alt="Favicon" />
+      <span id="tab-title">Chrome Quizzer</span>
     </div>
-    <div id="status" aria-live="polite">Idle</div>
 
-    <h1>Summary</h1>
+
+    <h1 id="summary-title">Summary</h1>
     <div id="summary"></div>
-
-    <h1>Quiz</h1>
+    <hr>
     <div id="quiz"></div>
     
     <script src="sidepanel.js"></script>
