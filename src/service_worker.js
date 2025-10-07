@@ -81,12 +81,22 @@ async function generateData(message, sender, sendResponse) {
   const summary = await summarizer.summarize(article.textContent);
   console.log('Article summarized');
 
-  const quiz = JSON.parse(await languageModel.prompt("Generate a quiz of 20 questions based on the following article:\n\n" + article.textContent + "\n\nQuiz:",
-    {
-      responseConstraint: quizSchema
-    }
-  ));
-  console.log('Quiz generated');
+  let quiz;
+  try {
+    quiz = JSON.parse(await languageModel.prompt("Generate a quiz of 20 questions based on the following article:\n\n" + article.textContent + "\n\nQuiz:",
+      {
+        responseConstraint: quizSchema
+      }
+    ));
+    console.log('Quiz generated');
+  } catch (err) {
+    console.error('Failed to parse quiz JSON:', err);
+    sendResponse({
+      success: false,
+      error: 'Quiz generation failed: invalid JSON returned by language model'
+    });
+    return;
+  }
 
   // For now return a placeholder quiz; replace with real generation if needed
   sendResponse({
