@@ -13,7 +13,7 @@ import quizSchema from '../schemas/quiz-schema.json' assert { type: 'json' };
  */
 async function createLanguageModel(options = {}) {
   return await acquireModel(
-    ai.languageModel,
+    LanguageModel,
     options
   );
 }

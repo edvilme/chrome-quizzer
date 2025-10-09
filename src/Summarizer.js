@@ -18,7 +18,7 @@ async function createSummarizer(options = {}) {
   };
   
   return await acquireModel(
-    ai.summarizer,
+    Summarizer,
     { ...defaultOptions, ...options }
   );
 }
