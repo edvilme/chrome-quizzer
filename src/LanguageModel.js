@@ -20,8 +20,7 @@ async function createLanguageModel(options = {}) {
   
   return await acquireModel(
     self.ai.languageModel,
-    { ...defaultOptions, ...options },
-    'Language model'
+    { ...defaultOptions, ...options }
   );
 }
 

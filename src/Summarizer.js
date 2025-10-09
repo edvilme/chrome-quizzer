@@ -13,8 +13,7 @@ import { acquireModel } from './ModelAcquisition.js';
 async function createSummarizer(options = {}) {
   return await acquireModel(
     self.ai.summarizer,
-    options,
-    'Summarizer'
+    options
   );
 }
 

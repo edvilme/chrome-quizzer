@@ -7,21 +7,25 @@ import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import { DOMParser } from "linkedom";
 
 /**
- * Gets the current active tab and validates it's a web page.
- * @returns {Promise<Object|null>} Tab object with outerHTML, or null if invalid
- * @throws {Error} If tab is not a valid web page (chrome://, chrome-extension://, etc.)
+ * Extracts all relevant data from the current active tab.
+ * Gets the current tab, validates it's a webpage (not chrome:// or chrome-extension://),
+ * and returns a JSON object with title, domContent, article, favicon, etc.
+ * 
+ * @returns {Promise<Object>} Object containing title, domContent, favicon, and article
+ * @throws {Error} If no valid tab is found or page is not readerable
  */
-async function getCurrentTab() {
+async function extractTabData() {
+  // Get the current active tab
   let [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   
   // Validate tab exists and has valid URL
   if (!tab || !tab.url || !tab.title) {
-    return null;
+    throw new Error('No sender tab');
   }
   
-  // Check if it's a chrome internal page
+  // Check if it's a chrome internal page - send error if not a webpage
   if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
-    return null;
+    throw new Error('Page not readerable');
   }
   
   // Extract the DOM from the tab
@@ -29,85 +33,31 @@ async function getCurrentTab() {
     target: { tabId: tab.id },
     func: () => document.documentElement.outerHTML,
   });
-
-  return { ...tab, tabOuterHtml: tabDOM[0].result };
-}
-
-/**
- * Extracts the favicon from a parsed DOM.
- * @param {Document} dom - The parsed DOM document
- * @returns {string|null} The favicon URL or null if not found
- */
-function extractFavicon(dom) {
-  const iconLink = dom.querySelector('link[rel="icon"]');
-  const shortcutIconLink = dom.querySelector('link[rel="shortcut icon"]');
-  return iconLink?.href || shortcutIconLink?.href || null;
-}
-
-/**
- * Parses HTML string into a DOM document.
- * @param {string} html - The HTML string to parse
- * @returns {Document} The parsed DOM document
- */
-function parseDOM(html) {
-  return new DOMParser().parseFromString(html, 'text/html');
-}
-
-/**
- * Checks if a page is readerable (can be processed by Readability).
- * @param {Document} dom - The parsed DOM document
- * @returns {boolean} True if the page is readerable
- */
-function isPageReaderable(dom) {
-  return isProbablyReaderable(dom);
-}
-
-/**
- * Extracts article content from a DOM using Readability.
- * @param {Document} dom - The parsed DOM document
- * @returns {Object} The parsed article object with title, content, etc.
- */
-function extractArticle(dom) {
-  return new Readability(dom).parse();
-}
-
-/**
- * Extracts all relevant data from the current active tab.
- * @returns {Promise<Object>} Object containing tab data, DOM, favicon, and article
- * @throws {Error} If no valid tab is found or page is not readerable
- */
-async function extractTabData() {
-  // Get the active tab
-  const tab = await getCurrentTab();
-  if (!tab) {
-    throw new Error('No sender tab');
-  }
+  
+  const domContent = tabDOM[0].result;
   
   // Parse the DOM
-  const dom = parseDOM(tab.tabOuterHtml);
+  const dom = new DOMParser().parseFromString(domContent, 'text/html');
   
   // Check if page is readerable
-  if (!isPageReaderable(dom)) {
+  if (!isProbablyReaderable(dom)) {
     throw new Error('Page not readerable');
   }
   
-  // Extract data
-  const favicon = extractFavicon(dom);
-  const article = extractArticle(dom);
+  // Extract favicon
+  const iconLink = dom.querySelector('link[rel="icon"]');
+  const shortcutIconLink = dom.querySelector('link[rel="shortcut icon"]');
+  const favicon = iconLink?.href || shortcutIconLink?.href || null;
+  
+  // Extract article content
+  const article = new Readability(dom).parse();
   
   return {
-    tab,
-    dom,
+    title: tab.title,
+    domContent,
     favicon,
     article
   };
 }
 
-export {
-  getCurrentTab,
-  extractFavicon,
-  parseDOM,
-  isPageReaderable,
-  extractArticle,
-  extractTabData
-};
+export { extractTabData };
