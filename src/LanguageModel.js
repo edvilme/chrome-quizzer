@@ -12,15 +12,9 @@ import quizSchema from '../schemas/quiz-schema.json' assert { type: 'json' };
  * @returns {Promise<Object|null>} The language model instance, or null if unavailable
  */
 async function createLanguageModel(options = {}) {
-  const defaultOptions = {
-    type: "tldr",
-    length: "long",
-    format: "markdown"
-  };
-  
   return await acquireModel(
-    self.ai.languageModel,
-    { ...defaultOptions, ...options }
+    ai.languageModel,
+    options
   );
 }
 

@@ -16,12 +16,12 @@ async function generateData(message, sender, sendResponse) {
   const { favicon, article } = tabData;
 
   // Get models
-  const summarizer = await createSummarizer();
-  const languageModel = await createLanguageModel({
+  const summarizer = await createSummarizer({
     type: "tldr",
     length: "long",
     format: "markdown"
   });
+  const languageModel = await createLanguageModel();
   console.log('Models loaded');
 
   // Summarize

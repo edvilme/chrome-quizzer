@@ -11,9 +11,15 @@ import { acquireModel } from './ModelAcquisition.js';
  * @returns {Promise<Object|null>} The summarizer instance, or null if unavailable
  */
 async function createSummarizer(options = {}) {
+  const defaultOptions = {
+    type: "tldr",
+    length: "long",
+    format: "markdown"
+  };
+  
   return await acquireModel(
-    self.ai.summarizer,
-    options
+    ai.summarizer,
+    { ...defaultOptions, ...options }
   );
 }
 
