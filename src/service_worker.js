@@ -1,26 +1,7 @@
 import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import { DOMParser } from "linkedom";
-import quizSchema from "../schemas/quiz-schema.json" assert { type: "json" };
-
-async function getModel(type = 'language', options = {}) {
-  const isLanguageModel = type === 'language';
-  const ModelClass = isLanguageModel ? LanguageModel : Summarizer;
-
-  const modelAvailability = await ModelClass.availability();
-  if (modelAvailability != "downloadable" && modelAvailability != "downloading" && modelAvailability != "available") {
-    console.error(`${isLanguageModel ? 'Language model' : 'Summarizer'} not available:`, modelAvailability);
-    return null;
-  }
-
-  return await ModelClass.create({
-    ...options,
-    monitor(m) {
-      m.addEventListener('downloadprogress', (e) => {
-        console.log(`${isLanguageModel ? 'Language model' : 'Summarizer'} downloaded ${e.loaded * 100}%`);
-      });
-    }
-  });
-}
+import { createLanguageModel, generateQuiz } from "./LanguageModel.js";
+import { createSummarizer, summarizeText } from "./Summarizer.js";
 
 async function getCurrentTab() {
   let [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
@@ -55,8 +36,8 @@ async function generateData(message, sender, sendResponse) {
   console.log('Article extracted');
 
   // Get models
-  const summarizer = await getModel('summarizer');
-  const languageModel = await getModel('language', {
+  const summarizer = await createSummarizer();
+  const languageModel = await createLanguageModel({
     type: "tldr",
     length: "long",
     format: "markdown"
@@ -64,16 +45,12 @@ async function generateData(message, sender, sendResponse) {
   console.log('Models loaded');
 
   // Summarize
-  const summary = await summarizer.summarize(article.textContent);
+  const summary = await summarizeText(summarizer, article.textContent);
   console.log('Article summarized');
 
   let quiz;
   try {
-    quiz = JSON.parse(await languageModel.prompt("Generate a quiz of 20 questions based on the following article:\n\n" + article.textContent + "\n\nQuiz:",
-      {
-        responseConstraint: quizSchema
-      }
-    ));
+    quiz = await generateQuiz(languageModel, article.textContent);
     console.log('Quiz generated');
   } catch (err) {
     console.error('Failed to parse quiz JSON:', err);
