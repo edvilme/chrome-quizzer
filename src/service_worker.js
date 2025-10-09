@@ -1,39 +1,19 @@
-import { Readability, isProbablyReaderable } from "@mozilla/readability";
-import { DOMParser } from "linkedom";
 import { createLanguageModel, generateQuiz } from "./LanguageModel.js";
 import { createSummarizer, summarizeText } from "./Summarizer.js";
-
-async function getCurrentTab() {
-  let [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-  if (!tab || !tab.url || !tab.title || tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://'))
-    return null;
-  const tabDOM = await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: () => document.documentElement.outerHTML,
-  });
-
-  return { ...tab, tabOuterHtml: tabDOM[0].result };
-}
+import { extractTabData } from "./TabExtractor.js";
 
 async function generateData(message, sender, sendResponse) {
-  // Get tab and its content
-  const tab = await getCurrentTab();
-  if (!tab) {
-    sendResponse({ success: false, error: 'No sender tab' });
+  // Extract tab data
+  let tabData;
+  try {
+    tabData = await extractTabData();
+    console.log('Tab data extracted');
+  } catch (err) {
+    sendResponse({ success: false, error: err.message });
     return;
   }
-  const tabDOM = new DOMParser().parseFromString(tab.tabOuterHtml, 'text/html');
-  console.log('Tab DOM parsed');
-
-  // Extract main article content using Readability
-  if (!isProbablyReaderable(tabDOM)) {
-    sendResponse({ success: false, error: 'Page not readerable' });
-    return;
-  }
-  const favicon = tabDOM.querySelector('link[rel="icon"]')?.href || tabDOM.querySelector('link[rel="shortcut icon"]')?.href || null;
-  const article = new Readability(tabDOM).parse();
-
-  console.log('Article extracted');
+  
+  const { favicon, article } = tabData;
 
   // Get models
   const summarizer = await createSummarizer();
