@@ -132,3 +132,7 @@ dist
 # Build output
 dist/
 build/
+
+# Generated JavaScript from TypeScript
+static/sidepanel.js
+static/sidepanel.js.map

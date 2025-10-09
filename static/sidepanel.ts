@@ -1,11 +1,13 @@
+import type { PageElements, GenerateDataResponse, QuizQuestion } from "../src/types/quiz";
+
 document.addEventListener('DOMContentLoaded', () => {
-  const elements = {
-    btn: document.getElementById('get-article'),
-    summary: document.getElementById('summary'),
-    summaryTitle: document.getElementById('summary-title'),
-    quiz: document.getElementById('quiz'),
-    favicon: document.getElementById('tab-favicon'),
-    title: document.getElementById('tab-title'),
+  const elements: PageElements = {
+    btn: document.getElementById('get-article') as HTMLButtonElement,
+    summary: document.getElementById('summary') as HTMLElement,
+    summaryTitle: document.getElementById('summary-title') as HTMLElement,
+    quiz: document.getElementById('quiz') as HTMLElement,
+    favicon: document.getElementById('tab-favicon') as HTMLImageElement,
+    title: document.getElementById('tab-title') as HTMLElement,
   };
   initializePage(elements);
   elements.btn.addEventListener('click', () => handleGenerateQuiz(elements));
@@ -13,9 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Initializes the page by setting the default status.
- * @param {Object} elements - The DOM elements used in the page.
+ * @param elements - The DOM elements used in the page.
  */
-function initializePage(elements) {
+function initializePage(elements: PageElements): void {
   document.body.setAttribute('data-status', 'empty');
   handleGenerateQuiz(elements);
 }
@@ -23,11 +25,11 @@ function initializePage(elements) {
 /**
  * Handles action to generate a quiz.
  * Sends a message to the Chrome runtime to fetch the article data.
- * @param {Object} elements - The DOM elements used in the page.
+ * @param elements - The DOM elements used in the page.
  */
-function handleGenerateQuiz(elements) {
+function handleGenerateQuiz(elements: PageElements): void {
   document.body.setAttribute('data-status', 'loading');
-  chrome.runtime.sendMessage({ type: 'getTabArticle' }, (resp) => {
+  chrome.runtime.sendMessage({ type: 'getTabArticle' }, (resp: GenerateDataResponse) => {
     if (chrome.runtime.lastError || !resp || !resp.success) return;
     updatePageContent(elements, resp);
   });
@@ -35,10 +37,10 @@ function handleGenerateQuiz(elements) {
 
 /**
  * Updates the page content with the fetched article and quiz data.
- * @param {Object} elements - The DOM elements used in the page.
- * @param {Object} resp - The response object containing article and quiz data.
+ * @param elements - The DOM elements used in the page.
+ * @param resp - The response object containing article and quiz data.
  */
-function updatePageContent(elements, resp) {
+function updatePageContent(elements: PageElements, resp: GenerateDataResponse): void {
   document.body.setAttribute('data-status', 'loaded');
   elements.favicon.src = resp.favicon || '';
   elements.title.textContent = resp.article?.title || 'Tab';
@@ -54,10 +56,10 @@ function updatePageContent(elements, resp) {
 
 /**
  * Renders a single quiz question as a DOM element.
- * @param {Object} question - The question object containing title and options.
- * @returns {HTMLElement} - The DOM element representing the question.
+ * @param question - The question object containing title and options.
+ * @returns The DOM element representing the question.
  */
-function renderQuestion(question) {
+function renderQuestion(question: QuizQuestion): HTMLElement {
   const questionDiv = document.createElement('div');
   questionDiv.className = 'question';
 
@@ -82,14 +84,23 @@ function renderQuestion(question) {
   return questionDiv;
 }
 
-function validateAnswer(optionItem, selectedOption, correctAnswer) {
+/**
+ * Validates the selected answer and provides visual feedback.
+ * @param optionItem - The DOM element of the selected option.
+ * @param selectedOption - The text of the selected option.
+ * @param correctAnswer - The correct answer to the question.
+ */
+function validateAnswer(optionItem: HTMLElement, selectedOption: string, correctAnswer: string): void {
   if (optionItem.textContent === correctAnswer) {
     optionItem.classList.add('correct');
   } else if (optionItem.textContent === selectedOption) {
     optionItem.classList.add('incorrect');
   }
-  optionItem.parentElement.querySelectorAll('.option').forEach((opt) => {
-    opt.removeEventListener('click', validateAnswer);
-    opt.style.pointerEvents = 'none';
-  });
+  const parentElement = optionItem.parentElement;
+  if (parentElement) {
+    parentElement.querySelectorAll('.option').forEach((opt) => {
+      // Remove all click listeners by cloning the node
+      (opt as HTMLElement).style.pointerEvents = 'none';
+    });
+  }
 }
