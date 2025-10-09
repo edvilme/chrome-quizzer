@@ -38,20 +38,6 @@ async function extractTabData() {
     throw new Error('Page not readerable');
   }
   
-  // Check if the URL points to a non-HTML file (images, PDFs, SVG, etc.)
-  // These file types cannot be processed as readable articles
-  const nonHtmlExtensions = [
-    '.pdf', '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.svg',
-    '.ico', '.mp4', '.mp3', '.avi', '.mov', '.wav', '.zip', '.tar',
-    '.gz', '.rar', '.7z', '.doc', '.docx', '.xls', '.xlsx', '.ppt',
-    '.pptx', '.xml', '.json', '.css', '.js'
-  ];
-  
-  const urlPath = new URL(tab.url).pathname.toLowerCase();
-  if (nonHtmlExtensions.some(ext => urlPath.endsWith(ext))) {
-    throw new Error('Page not readerable');
-  }
-  
   // Extract the DOM from the tab
   const tabDOM = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
