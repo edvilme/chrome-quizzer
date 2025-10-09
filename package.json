@@ -4,9 +4,14 @@
     "linkedom": "^0.18.12"
   },
   "devDependencies": {
-    "esbuild": "^0.25.10"
+    "@types/chrome": "^0.1.22",
+    "esbuild": "^0.25.10",
+    "typescript": "^5.9.3"
   },
   "scripts": {
-    "build": "esbuild src/service_worker.js --bundle --minify --sourcemap --outdir=dist"
+    "build": "npm run build:service-worker && npm run build:sidepanel",
+    "build:service-worker": "esbuild src/service_worker.ts --bundle --minify --sourcemap --outdir=dist",
+    "build:sidepanel": "esbuild static/sidepanel.ts --bundle --minify --sourcemap --outfile=static/sidepanel.js",
+    "typecheck": "tsc --noEmit"
   }
 }

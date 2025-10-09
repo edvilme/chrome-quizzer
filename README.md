@@ -74,14 +74,18 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 chrome-quizzer/
 ├── assets/           # Extension icons and screenshots
 ├── schemas/          # JSON schemas for AI responses
-├── src/              # Source code
-│   └── service_worker.js  # Background script (AI processing)
+├── src/              # Source code (TypeScript)
+│   ├── service_worker.ts     # Background script (AI processing)
+│   └── types/                # TypeScript type definitions
+│       ├── chrome-ai.d.ts    # Chrome AI APIs types
+│       └── quiz.ts           # Quiz-related types
 ├── static/           # Side panel UI
 │   ├── sidepanel.html
-│   ├── sidepanel.js
+│   ├── sidepanel.ts          # Side panel logic (TypeScript)
 │   └── sidepanel.css
 ├── manifest.json     # Extension configuration
-└── package.json      # Dependencies
+├── package.json      # Dependencies
+└── tsconfig.json     # TypeScript configuration
 ```
 
 ### Building
@@ -90,7 +94,15 @@ chrome-quizzer/
 npm run build
 ```
 
-This bundles the service worker with esbuild, including all dependencies.
+This compiles TypeScript and bundles the service worker and side panel with esbuild, including all dependencies.
+
+### Type Checking
+
+```bash
+npm run typecheck
+```
+
+Runs TypeScript type checking without emitting files.
 
 ### Debugging
 
@@ -99,6 +111,7 @@ This bundles the service worker with esbuild, including all dependencies.
 
 ## 🔧 Technologies Used
 
+- **TypeScript**: Strongly-typed JavaScript for better code quality and developer experience
 - **Chrome Extension APIs**: Manifest V3, Side Panel API, Scripting API
 - **Chrome AI APIs**: Built-in Language Model and Summarizer
 - **Mozilla Readability**: Article content extraction
