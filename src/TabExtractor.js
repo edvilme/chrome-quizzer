@@ -8,7 +8,7 @@ import { DOMParser } from "linkedom";
 
 /**
  * Extracts all relevant data from the current active tab.
- * Gets the current tab, validates it's a webpage (not chrome:// or chrome-extension://),
+ * Gets the current tab, validates it's a webpage (not browser internal pages),
  * and returns a JSON object with title, domContent, article, favicon, etc.
  * 
  * @returns {Promise<Object>} Object containing title, domContent, favicon, and article
@@ -23,18 +23,39 @@ async function extractTabData() {
     throw new Error('No sender tab');
   }
   
-  // Check if it's a chrome internal page - send error if not a webpage
-  if (tab.url.startsWith('chrome://') || tab.url.startsWith('chrome-extension://')) {
+  // Check if it's a browser internal page - send error if not a webpage
+  // These are special browser-specific protocols that cannot be scraped
+  const internalPagePrefixes = [
+    'chrome://',
+    'chrome-extension://',
+    'edge://',
+    'brave://',
+    'arc://',
+    'about:'
+  ];
+  
+  if (internalPagePrefixes.some(prefix => tab.url.startsWith(prefix))) {
     throw new Error('Page not readerable');
   }
   
   // Extract the DOM from the tab
   const tabDOM = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    func: () => document.documentElement.outerHTML,
+    func: () => {
+      // Check if the document is actually an HTML document
+      if (document.contentType && !document.contentType.includes('html') && !document.contentType.includes('text')) {
+        return null;
+      }
+      return document.documentElement.outerHTML;
+    },
   });
   
   const domContent = tabDOM[0].result;
+  
+  // If we couldn't extract content (non-HTML document), throw error
+  if (!domContent) {
+    throw new Error('Page not readerable');
+  }
   
   // Parse the DOM
   const dom = new DOMParser().parseFromString(domContent, 'text/html');
