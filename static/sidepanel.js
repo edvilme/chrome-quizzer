@@ -1,102 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const elements = {
-    btn: document.getElementById('get-article'),
-    summary: document.getElementById('summary'),
-    summaryTitle: document.getElementById('summary-title'),
-    quiz: document.getElementById('quiz'),
-    favicon: document.getElementById('tab-favicon'),
-    title: document.getElementById('tab-title'),
-    languagesForm: document.getElementById('languages').querySelector('form'),
-  };
-  initializePage(elements);
-  elements.btn.addEventListener('click', () => handleGenerateQuiz(elements));
-
-  // Add event listener for language selection
-  elements.languagesForm.addEventListener('change', (event) => {
-    if (event.target.name === 'language') {
-      console.log(`Selected language: ${event.target.value}`);
-    }
-  });
-});
-
-/**
- * Initializes the page by setting the default status.
- * @param {Object} elements - The DOM elements used in the page.
- */
-function initializePage(elements) {
-  document.body.setAttribute('data-status', 'empty');
-  handleGenerateQuiz(elements);
-}
-
-/**
- * Handles action to generate a quiz.
- * Sends a message to the Chrome runtime to fetch the article data.
- * @param {Object} elements - The DOM elements used in the page.
- */
-function handleGenerateQuiz(elements) {
-  document.body.setAttribute('data-status', 'loading');
-  chrome.runtime.sendMessage({ type: 'getTabArticle' }, (resp) => {
-    if (chrome.runtime.lastError || !resp || !resp.success) return;
-    updatePageContent(elements, resp);
-  });
-}
-
-/**
- * Updates the page content with the fetched article and quiz data.
- * @param {Object} elements - The DOM elements used in the page.
- * @param {Object} resp - The response object containing article and quiz data.
- */
-function updatePageContent(elements, resp) {
-  document.body.setAttribute('data-status', 'loaded');
-  elements.favicon.src = resp.favicon || '';
-  elements.title.textContent = resp.article?.title || 'Tab';
-  elements.summaryTitle.textContent = resp.article?.title || 'Summary';
-  elements.summary.textContent = resp.summary || '(no summary found)';
-
-  // Clear the languages list before adding new items
-  elements.languagesForm.innerHTML = '';
-  const languages = new Set();
-  if (resp.language) {
-    languages.add(resp.language);
-  }
-
-  languages.add(navigator.language.split('-')[0]);
-  languages.add('English');
-  languages.add('Español');
-  languages.add('Français');
-  languages.add('Deutsch');
-  languages.add('Italiano');
-  
-  // Add language items to the list
-  languages.forEach(language => {
-    elements.languagesForm.appendChild(renderLanguage(language));
-  });
-
-  // Clear the quiz container before adding new questions
-  elements.quiz.innerHTML = '';
-  resp.quiz?.questions?.forEach((question) => {
-    elements.quiz.appendChild(renderQuestion(question));
-  });
-}
-
-/**
- * Renders a single programming language as a radio button.
- * @param {Object} language - The language object containing type and name.
- * @returns {HTMLElement} - The DOM element representing the language.
- */
-function renderLanguage(language) {
-    const radioItem = document.createElement('label');
-    const input = document.createElement('input');
-    Object.assign(input, {
-      type: 'radio',
-      name: 'language',
-      value: language,
-    });
-    radioItem.appendChild(input);
-    radioItem.appendChild(document.createTextNode(language));
-    return radioItem;
-}
-
 /**
  * Renders a single quiz question as a DOM element.
  * @param {Object} question - The question object containing title and options.
@@ -138,3 +39,51 @@ function validateAnswer(optionItem, selectedOption, correctAnswer) {
     opt.style.pointerEvents = 'none';
   });
 }
+
+async function populateData() {
+  const elements = {
+    btn: document.getElementById('get-article'),
+    summary: document.getElementById('summary'),
+    summaryTitle: document.getElementById('summary-title'),
+    quiz: document.getElementById('quiz'),
+    favicon: document.getElementById('tab-favicon'),
+    title: document.getElementById('tab-title'),
+    languagesForm: document.getElementById('languages').querySelector('form'),
+  };
+
+  let tabDataResponse = await chrome.runtime.sendMessage({ type: 'getTab' });
+  if (chrome.runtime.lastError || !tabDataResponse || !tabDataResponse.success) {
+    document.body.setAttribute('data-status', 'error');
+  }
+  let tabData = tabDataResponse.tabData;
+  elements.favicon.src = tabData.favicon || 'default_favicon.png';
+  elements.title.textContent = tabData.title || 'No title available';
+
+  let summaryResponse = await chrome.runtime.sendMessage({ type: 'generateSummary', tabData });
+  if (chrome.runtime.lastError || !summaryResponse || !summaryResponse.success) {
+    document.body.setAttribute('data-status', 'error');
+    return;
+  }
+  summary = summaryResponse.summary;
+  elements.summary.textContent = summary || 'No summary available';
+
+  let quizResponse = await chrome.runtime.sendMessage({ type: 'generateQuiz', tabData });
+  if (chrome.runtime.lastError || !quizResponse || !quizResponse.success) {
+    document.body.setAttribute('data-status', 'error');
+    return;
+  }
+  let quiz = quizResponse.quiz;
+  if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+    elements.quiz.textContent = 'No quiz available';
+    return;
+  }
+  elements.quiz.innerHTML = '';
+  quiz.questions.forEach((question) => {
+    const questionElement = renderQuestion(question);
+    elements.quiz.appendChild(questionElement);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  populateData();
+});
