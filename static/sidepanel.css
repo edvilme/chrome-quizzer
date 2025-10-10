@@ -109,6 +109,44 @@ h1 {
     white-space: nowrap
 }
 
+
+#languages {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#languages form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#languages label {
+    display: flex;
+    align-items: center;
+    background: var(--pill);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color .12s, box-shadow .12s, transform .08s;
+}
+
+#languages label:hover {
+    background: color-mix(in srgb, var(--accent) 8%, var(--ui));
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+#languages input[type="radio"] {
+    display: none;
+}
+
+#languages input[type="radio"]:checked + label {
+    background: color-mix(in srgb, var(--accent) 20%, var(--ui));
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
 /* Horizontal rule styling that matches the theme */
 hr {
     border: none;

@@ -6,9 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
     quiz: document.getElementById('quiz'),
     favicon: document.getElementById('tab-favicon'),
     title: document.getElementById('tab-title'),
+    languagesForm: document.getElementById('languages').querySelector('form'),
   };
   initializePage(elements);
   elements.btn.addEventListener('click', () => handleGenerateQuiz(elements));
+
+  // Add event listener for language selection
+  elements.languagesForm.addEventListener('change', (event) => {
+    if (event.target.name === 'language') {
+      console.log(`Selected language: ${event.target.value}`);
+    }
+  });
 });
 
 /**
@@ -45,11 +53,49 @@ function updatePageContent(elements, resp) {
   elements.summaryTitle.textContent = resp.article?.title || 'Summary';
   elements.summary.textContent = resp.summary || '(no summary found)';
 
+  // Clear the languages list before adding new items
+  elements.languagesForm.innerHTML = '';
+  const languages = [];
+  if (resp.language) {
+    languages.push({ type: 'article', name: resp.language });
+  }
+
+  languages.push({ type: 'system', name: navigator.language.split('-')[0] });
+  // languages.push({ type: 'language', name: 'English' });
+  // languages.push({ type: 'language', name: 'Español' });
+  // languages.push({ type: 'language', name: 'Français' });
+  // languages.push({ type: 'language', name: 'Deutsch' });
+  // languages.push({ type: 'language', name: 'Italiano' });
+  
+  // Add language items to the list
+  languages.forEach(language => {
+    elements.languagesForm.appendChild(renderLanguage(language));
+  });
+
   // Clear the quiz container before adding new questions
   elements.quiz.innerHTML = '';
   resp.quiz?.questions?.forEach((question) => {
     elements.quiz.appendChild(renderQuestion(question));
   });
+}
+
+/**
+ * Renders a single programming language as a radio button.
+ * @param {Object} language - The language object containing type and name.
+ * @returns {HTMLElement} - The DOM element representing the language.
+ */
+function renderLanguage(language) {
+    const radioItem = document.createElement('label');
+    const input = document.createElement('input');
+    Object.assign(input, {
+      type: 'radio',
+      name: 'language',
+      value: language.name,
+      className: language.type,
+    });
+    radioItem.appendChild(input);
+    radioItem.appendChild(document.createTextNode(language.name));
+    return radioItem;
 }
 
 /**
