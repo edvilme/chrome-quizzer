@@ -5,7 +5,6 @@
 
 import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import { DOMParser } from "linkedom";
-import { createLanguageDetector, detectLanguage } from "./LanguageDetector";
 
 /**
  * Extracts all relevant data from the current active tab.
@@ -71,16 +70,11 @@ async function extractTabData() {
   // Extract article content
   const article = new Readability(dom).parse();
 
-  // Get article language
-  const languageDetector = await createLanguageDetector();
-  const language = await detectLanguage(languageDetector, article.textContent) || 'unknown';
-  
   return {
     title: tab.title,
     domContent,
     favicon,
     article,
-    language
   };
 }
 

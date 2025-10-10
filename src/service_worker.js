@@ -1,5 +1,6 @@
 import { createLanguageModel, generateQuiz } from "./LanguageModel.js";
 import { createSummarizer, summarizeText } from "./Summarizer.js";
+import { createLanguageDetector, detectLanguage } from "./LanguageDetector.js";
 import { extractTabData } from "./TabExtractor.js";
 
 async function generateData(message, sender, sendResponse) {
@@ -28,6 +29,11 @@ async function generateData(message, sender, sendResponse) {
   const summary = await summarizeText(summarizer, article.textContent);
   console.log('Article summarized');
 
+  // Detect language
+  const languageDetector = await createLanguageDetector();
+  const language = await detectLanguage(languageDetector, article.textContent) || 'unknown';
+  console.log(`Detected language: ${language}`);
+
   let quiz;
   try {
     quiz = await generateQuiz(languageModel, article.textContent);
@@ -46,7 +52,8 @@ async function generateData(message, sender, sendResponse) {
     favicon,
     article,
     summary,
-    quiz
+    quiz,
+    language
   });
 }
 
