@@ -120,6 +120,10 @@ h1 {
     gap: 10px;
 }
 
+#languages form:empty {
+    display: none;
+}
+
 #languages label {
     display: flex;
     align-items: center;
@@ -160,6 +164,24 @@ hr.strong {
     margin: 20px 0
 }
 
+
+#summary:empty::before {
+    content: "Loading summary...";
+    color: var(--muted);
+    font-style: italic;
+}
+#summary-title:has(+ #summary:empty) {
+    display: none;
+}
+#quiz:empty::before {
+    content: "Loading quiz...";
+    color: var(--muted);
+    font-style: italic;
+}
+hr:has(+ #quiz:empty) {
+    display: none;
+}
+
 /* Quiz question styling */
 .question ul {
     list-style: none;
@@ -190,7 +212,7 @@ hr.strong {
 }
 
 /* Status-based visibility control */
-body[data-status="empty"] > *,
+/* body[data-status="empty"] > *,
 body[data-status="loading"] > * {
     display: none !important;
 }
@@ -208,4 +230,4 @@ body[data-status="loading"] > #loading {
 }
 body[data-status="loaded"] > #loading {
     display: none !important;
-}
+} */
