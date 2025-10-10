@@ -27,17 +27,28 @@ async function generateData(message, sender, sendResponse) {
   console.log('Models loaded');
 
   // Detect language
-  const language = await detectLanguage(languageDetector, article.textContent) || 'unknown';
+  const language = await detectLanguage(languageDetector, article.textContent);
   console.log('Language detected:', language);
 
+  // Get translated article
+  let translatedArticle = article.textContent;
+  if (language !== 'en') {
+    const translator = await createLanguageModel({
+      sourceLanguage: language,
+      targetLanguage: 'en'
+    });
+    translatedArticle = await translateText(translator, article.textContent);
+    console.log('Article translated to English');
+  }
+
   // Summarize
-  const summary = await summarizeText(summarizer, article.textContent);
+  const summary = await summarizeText(summarizer, translatedArticle);
   console.log('Article summarized');
 
 
   let quiz;
   try {
-    quiz = await generateQuiz(languageModel, article.textContent);
+    quiz = await generateQuiz(languageModel, translatedArticle);
     console.log('Quiz generated');
   } catch (err) {
     console.error('Failed to parse quiz JSON:', err);

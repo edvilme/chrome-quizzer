@@ -54,23 +54,25 @@ function updatePageContent(elements, resp) {
   elements.summary.textContent = resp.summary || '(no summary found)';
 
   // Clear the languages list before adding new items
-  elements.languagesForm.innerHTML = '';
-  const languages = new Set();
-  if (resp.language) {
-    languages.add(resp.language);
-  }
-
-  languages.add(navigator.language.split('-')[0]);
-  languages.add('English');
-  languages.add('Español');
-  languages.add('Français');
-  languages.add('Deutsch');
-  languages.add('Italiano');
-  
-  // Add language items to the list
-  languages.forEach(language => {
-    elements.languagesForm.appendChild(renderLanguage(language));
-  });
+  // elements.languagesForm.innerHTML = '';
+  // const languages = {
+  //   "en": { type: "language", name: "English", key: "en" },
+  //   "es": { type: "language", name: "Español", key: "es" },
+  //   "fr": { type: "language", name: "Français", key: "fr" },
+  //   "de": { type: "language", name: "Deutsch", key: "de" },
+  //   "it": { type: "language", name: "Italiano", key: "it" },
+  // };
+  // const userLang = navigator.language.split('-')[0];
+  // if (userLang && languages[userLang]) {
+  //   languages[userLang]['type'] = 'system';
+  // }
+  // const articleLang = resp.language;
+  // if (articleLang && languages[articleLang]) {
+  //   languages[articleLang]['type'] = 'article';
+  // }
+  // Object.values(languages).forEach(language => {
+  //   elements.languagesForm.appendChild(renderLanguage(language));
+  // });
 
   // Clear the quiz container before adding new questions
   elements.quiz.innerHTML = '';
@@ -86,14 +88,15 @@ function updatePageContent(elements, resp) {
  */
 function renderLanguage(language) {
     const radioItem = document.createElement('label');
+    radioItem.className = language.type;
     const input = document.createElement('input');
     Object.assign(input, {
       type: 'radio',
       name: 'language',
-      value: language,
+      value: language.name
     });
     radioItem.appendChild(input);
-    radioItem.appendChild(document.createTextNode(language));
+    radioItem.appendChild(document.createTextNode(language.name));
     return radioItem;
 }
 

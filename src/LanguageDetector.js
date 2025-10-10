@@ -14,7 +14,6 @@ async function createLanguageDetector(options = {}) {
 
 async function detectLanguage(languageDetector, text) {
     const response = await languageDetector.detect(text);
-    console.log('Language detection response:', response);
     return response
         .sort((a, b) => b.confidence - a.confidence)?.[0]
         ?.detectedLanguage;
