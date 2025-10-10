@@ -1,6 +1,7 @@
-import { createLanguageModel, generateQuiz } from "./LanguageModel.js";
-import { createSummarizer, summarizeText } from "./Summarizer.js";
+import { generateQuiz } from "./LanguageModel.js";
+import { summarizeText } from "./Summarizer.js";
 import { extractTabData } from "./TabExtractor.js";
+import { acquireModel } from "./ModelAcquisition.js";
 
 async function getTabData(message, sender, sendResponse) {
   try {
@@ -17,7 +18,7 @@ async function generateSummary(tabData, message, sender, sendResponse) {
   const { article } = tabData;
   let summarizer;
   try {
-    summarizer = await createSummarizer({
+    summarizer = await acquireModel(Summarizer, {
       type: "tldr",
       length: "long",
       format: "markdown"
@@ -42,7 +43,7 @@ async function generateQuizData(tabData, message, sender, sendResponse) {
   const { article } = tabData;
   let languageModel;
   try {
-    languageModel = await createLanguageModel();
+    languageModel = await acquireModel(LanguageModel);
   } catch (err) {
     sendResponse({ success: false, error: 'Failed to load language model' });
     return;
