@@ -66,23 +66,35 @@ async function populateData() {
   elements.title.textContent = tabData.title || 'No title available';
   console.log("Tab data received:", tabData);
 
-  let summaryResponse = await chrome.runtime.sendMessage({ type: 'generateSummary', tabData });
-  if (chrome.runtime.lastError || !summaryResponse || !summaryResponse.success) {
+  let summary
+  try {
+    let summaryResponse = await chrome.runtime.sendMessage({ type: 'generateSummary', tabData });
+    summary = summaryResponse.summary
+    if (chrome.runtime.lastError || !summaryResponse || !summaryResponse.success) {
+      throw new Error(summaryResponse.error)
+    }
+  } catch (error) {
+    console.error("Error generating summary:", error);
     document.body.setAttribute('data-status', 'error');
     return;
   }
-  summary = summaryResponse.summary;
   elements.summary.textContent = summary || 'No summary available';
   console.log("Summary received:", summary);
 
-  let quizResponse = await chrome.runtime.sendMessage({ type: 'generateQuiz', tabData });
-  if (chrome.runtime.lastError || !quizResponse || !quizResponse.success) {
+  let quiz
+  try {
+    let quizResponse = await chrome.runtime.sendMessage({ type: 'generateQuiz', tabData });
+    quiz = quizResponse.quiz;
+    if (chrome.runtime.lastError || !quizResponse || !quizResponse.success) {
+      throw new Error(quizResponse.error);
+    }
+  } catch (error) {
+    console.error("Error generating quiz:", error);
     document.body.setAttribute('data-status', 'error');
     return;
   }
-  let quiz = quizResponse.quiz;
   console.log("Quiz received:", quiz);
-  
+
   if (!quiz || !quiz.questions || quiz.questions.length === 0) {
     elements.quiz.textContent = 'No quiz available';
     return;
