@@ -5,6 +5,7 @@
 
 import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import { DOMParser } from "linkedom";
+import { createLanguageDetector, detectLanguage } from "./LanguageDetector";
 
 /**
  * Extracts all relevant data from the current active tab.
@@ -65,19 +66,21 @@ async function extractTabData() {
     throw new Error('Page not readerable');
   }
   
-  // Extract favicon
-  const iconLink = dom.querySelector('link[rel="icon"]');
-  const shortcutIconLink = dom.querySelector('link[rel="shortcut icon"]');
-  const favicon = iconLink?.href || shortcutIconLink?.href || null;
+  const favicon = tab.favIconUrl || null;
   
   // Extract article content
   const article = new Readability(dom).parse();
+
+  // Get article language
+  const languageDetector = await createLanguageDetector();
+  const language = await detectLanguage(languageDetector, article.textContent) || 'unknown';
   
   return {
     title: tab.title,
     domContent,
     favicon,
-    article
+    article,
+    language
   };
 }
 
