@@ -5,7 +5,7 @@
   "description": "Reader view and instant comprehension quizzes generated locally with Chrome's on-device LLM.",
   "action": {
     "default_title": "Click to open Quizzer",
-    "default_icon": "assets/icon.png"
+    "default_icon": "icons/quizzer_icon_32x32.png"
   },
   "permissions": [
     "sidePanel",
@@ -23,6 +23,9 @@
     "service_worker": "dist/service_worker.js"
   },
   "icons": {
-    "128": "assets/icon.png"
+    "16": "icons/quizzer_icon_16x16.png",
+    "32": "icons/quizzer_icon_32x32.png",
+    "48": "icons/quizzer_icon_48x48.png",
+    "128": "icons/quizzer_icon_128x128.png"
   }
 }
