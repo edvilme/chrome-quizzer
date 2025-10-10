@@ -3,21 +3,7 @@
  * Handles tasks related to the language model, including prompts and context.
  */
 
-import { acquireModel } from './ModelAcquisition.js';
 import quizSchema from '../schemas/quiz-schema.json' assert { type: 'json' };
-
-/**
- * Creates and configures a language model instance.
- * @param {Object} options - Options for the language model (type, length, format, etc.)
- * @returns {Promise<Object|null>} The language model instance, or null if unavailable
- */
-async function createLanguageModel(options = {}) {
-  return await acquireModel(
-    LanguageModel,
-    options
-  );
-}
-
 /**
  * Generates a quiz from article text using the language model.
  * @param {Object} languageModel - The language model instance
@@ -35,4 +21,4 @@ async function generateQuiz(languageModel, articleText) {
   return JSON.parse(response);
 }
 
-export { createLanguageModel, generateQuiz };
+export { generateQuiz };

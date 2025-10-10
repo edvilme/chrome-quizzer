@@ -1,55 +1,64 @@
-import { createLanguageModel, generateQuiz } from "./LanguageModel.js";
-import { createSummarizer, summarizeText } from "./Summarizer.js";
+import { generateQuiz } from "./LanguageModel.js";
+import { summarizeText } from "./Summarizer.js";
 import { extractTabData } from "./TabExtractor.js";
+import { acquireModel } from "./ModelAcquisition.js";
 
-async function generateData(message, sender, sendResponse) {
-  // Extract tab data
-  let tabData;
+async function getTabData(message, sender, sendResponse) {
   try {
-    tabData = await extractTabData();
-    console.log('Tab data extracted');
+    const tabData = await extractTabData();
+    sendResponse({ success: true, tabData });
+    return tabData;
   } catch (err) {
     sendResponse({ success: false, error: err.message });
+    return null;
+  }
+}
+
+async function generateSummary(tabData, message, sender, sendResponse) {
+  const { article } = tabData;
+  let summarizer;
+  try {
+    summarizer = await acquireModel(Summarizer, {
+      type: "tldr",
+      length: "long",
+      format: "markdown"
+    });
+  } catch (err) {
+    sendResponse({ success: false, error: 'Failed to load summarization model' });
     return;
   }
-  
-  const { favicon, article } = tabData;
 
-  // Get models
-  const summarizer = await createSummarizer({
-    type: "tldr",
-    length: "long",
-    format: "markdown"
-  });
-  const languageModel = await createLanguageModel();
-  console.log('Models loaded');
+  let summary;
+  try {
+    summary = await summarizeText(summarizer, article.textContent);
+    sendResponse({ success: true, summary });
+    return summary;
+  } catch (err) {
+    sendResponse({ success: false, error: 'Failed to generate summary' });
+    return;
+  }
+}
 
-  // Summarize
-  const summary = await summarizeText(summarizer, article.textContent);
-  console.log('Article summarized');
+async function generateQuizData(tabData, message, sender, sendResponse) {
+  const { article } = tabData;
+  let languageModel;
+  try {
+    languageModel = await acquireModel(LanguageModel);
+  } catch (err) {
+    sendResponse({ success: false, error: 'Failed to load language model' });
+    return;
+  }
 
   let quiz;
   try {
     quiz = await generateQuiz(languageModel, article.textContent);
-    console.log('Quiz generated');
+    sendResponse({ success: true, quiz });
+    return quiz;
   } catch (err) {
-    console.error('Failed to parse quiz JSON:', err);
-    sendResponse({
-      success: false,
-      error: 'Quiz generation failed: invalid JSON returned by language model'
-    });
+    sendResponse({ success: false, error: 'Failed to generate quiz' });
     return;
   }
-
-  sendResponse({
-    success: true,
-    favicon,
-    article,
-    summary,
-    quiz
-  });
 }
-
 
 // Allows users to open the side panel by clicking on the action toolbar icon
 // Prefer the declarative behavior, and also register an explicit click handler
@@ -61,8 +70,27 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 
 // Listen for messages from the side panel (or other extension pages)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message?.type == 'getTabArticle') {
-    generateData(message, sender, sendResponse);
+  if (message?.type == 'getTab') {
+    getTabData(message, sender, sendResponse).then(tabData => {
+      console.log("Tab data requested:", tabData);
+    });
     return true; // Indicate that we will respond asynchronously
   }
+  if (message?.type == 'generateSummary') {
+    console.log("Generating summary for message:", message);
+    const tabData = message.tabData;
+    generateSummary(tabData, message, sender, sendResponse).then((summary) => {
+      console.log("Summary generated:", summary);
+    });
+    return true; // Indicate that we will respond asynchronously
+  }
+  if (message?.type == 'generateQuiz') {
+    console.log("Generating quiz for message:", message);
+    const tabData = message.tabData;
+    generateQuizData(tabData, message, sender, sendResponse).then((quiz) => {
+      console.log("Quiz generated:", quiz);
+    });
+    return true; // Indicate that we will respond asynchronously
+  }
+  return false; // No asynchronous response
 });

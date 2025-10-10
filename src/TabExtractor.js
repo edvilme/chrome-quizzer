@@ -65,10 +65,7 @@ async function extractTabData() {
     throw new Error('Page not readerable');
   }
   
-  // Extract favicon
-  const iconLink = dom.querySelector('link[rel="icon"]');
-  const shortcutIconLink = dom.querySelector('link[rel="shortcut icon"]');
-  const favicon = iconLink?.href || shortcutIconLink?.href || null;
+  const favicon = tab.favIconUrl || null;
   
   // Extract article content
   const article = new Readability(dom).parse();

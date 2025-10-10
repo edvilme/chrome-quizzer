@@ -3,6 +3,8 @@
  * Handles logic to acquire AI models and check their availability.
  */
 
+const modelsCache = {}
+
 /**
  * Acquires a model (LanguageModel or Summarizer) from the Chrome AI API.
  * @param {Object} ModelClass - The model class (window.ai.languageModel or window.ai.summarizer)
@@ -10,6 +12,9 @@
  * @returns {Promise<Object|null>} The created model instance, or null if unavailable
  */
 async function acquireModel(ModelClass, options = {}) {
+  // Check in cache
+  if (modelsCache[ModelClass]) return modelsCache[ModelClass]
+
   // Check model availability
   const modelAvailability = await ModelClass.availability();
   
@@ -21,7 +26,7 @@ async function acquireModel(ModelClass, options = {}) {
   }
 
   // Create the model with download progress monitoring
-  return await ModelClass.create({
+  modelsCache[ModelClass] = await ModelClass.create({
     ...options,
     monitor(m) {
       m.addEventListener('downloadprogress', (e) => {
@@ -29,6 +34,8 @@ async function acquireModel(ModelClass, options = {}) {
       });
     }
   });
+
+  return modelsCache[ModelClass]
 }
 
 export { acquireModel };
