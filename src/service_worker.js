@@ -23,6 +23,7 @@ async function generateData(message, sender, sendResponse) {
     format: "markdown"
   });
   const languageModel = await createLanguageModel();
+  const languageDetector = await createLanguageDetector();
   console.log('Models loaded');
 
   // Summarize
@@ -30,7 +31,6 @@ async function generateData(message, sender, sendResponse) {
   console.log('Article summarized');
 
   // Detect language
-  const languageDetector = await createLanguageDetector();
   const language = await detectLanguage(languageDetector, article.textContent) || 'unknown';
   console.log(`Detected language: ${language}`);
 
