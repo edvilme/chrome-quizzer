@@ -14,7 +14,7 @@ async function createLanguageDetector(options = {}) {
 
 async function detectLanguage(languageDetector, text) {
     const response = await languageDetector.detect(text);
-    return response[0]?.language;
+    return response[0]?.detectLanguage;
 }
 
 export { createLanguageDetector, detectLanguage };

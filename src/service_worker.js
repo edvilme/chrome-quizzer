@@ -31,8 +31,7 @@ async function generateData(message, sender, sendResponse) {
   console.log('Article summarized');
 
   // Detect language
-  const language = await detectLanguage(languageDetector, article.textContent) || 'unknown';
-  console.log(`Detected language: ${language}`);
+  const language = await detectLanguage(languageDetector, article.textContent) 
 
   let quiz;
   try {
