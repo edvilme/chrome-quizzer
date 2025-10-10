@@ -30,11 +30,12 @@ async function generateSummary(tabData, message, sender, sendResponse) {
   let summary;
   try {
     summary = await summarizeText(summarizer, article.textContent);
+    sendResponse({ success: true, summary });
+    return summary;
   } catch (err) {
     sendResponse({ success: false, error: 'Failed to generate summary' });
     return;
   }
-  sendResponse({ success: true, summary });
 }
 
 async function generateQuizData(tabData, message, sender, sendResponse) {
@@ -69,20 +70,25 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 // Listen for messages from the side panel (or other extension pages)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type == 'getTab') {
-    const tabData = getTabData(message, sender, sendResponse);
-    console.log("Tab data requested:", tabData);
+    getTabData(message, sender, sendResponse).then(tabData => {
+      console.log("Tab data requested:", tabData);
+    });
     return true; // Indicate that we will respond asynchronously
   }
   if (message?.type == 'generateSummary') {
+    console.log("Generating summary for message:", message);
     const tabData = message.tabData;
-    const summary = generateSummary(tabData, message, sender, sendResponse);
-    console.log("Summary requested:", summary);
+    generateSummary(tabData, message, sender, sendResponse).then((summary) => {
+      console.log("Summary generated:", summary);
+    });
     return true; // Indicate that we will respond asynchronously
   }
   if (message?.type == 'generateQuiz') {
+    console.log("Generating quiz for message:", message);
     const tabData = message.tabData;
-    const quiz = generateQuizData(tabData, message, sender, sendResponse);
-    console.log("Quiz requested:", quiz);
+    generateQuizData(tabData, message, sender, sendResponse).then((quiz) => {
+      console.log("Quiz generated:", quiz);
+    });
     return true; // Indicate that we will respond asynchronously
   }
   return false; // No asynchronous response

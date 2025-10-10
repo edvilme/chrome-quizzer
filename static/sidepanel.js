@@ -1,3 +1,12 @@
+const elements = {
+  btn: document.getElementById('get-article'),
+  summary: document.getElementById('summary'),
+  summaryTitle: document.getElementById('summary-title'),
+  quiz: document.getElementById('quiz'),
+  favicon: document.getElementById('tab-favicon'),
+  title: document.getElementById('tab-title')
+};
+
 /**
  * Renders a single quiz question as a DOM element.
  * @param {Object} question - The question object containing title and options.
@@ -41,15 +50,12 @@ function validateAnswer(optionItem, selectedOption, correctAnswer) {
 }
 
 async function populateData() {
-  const elements = {
-    btn: document.getElementById('get-article'),
-    summary: document.getElementById('summary'),
-    summaryTitle: document.getElementById('summary-title'),
-    quiz: document.getElementById('quiz'),
-    favicon: document.getElementById('tab-favicon'),
-    title: document.getElementById('tab-title'),
-    languagesForm: document.getElementById('languages').querySelector('form'),
-  };
+  // Clear previous content
+  elements.summaryTitle.innerText = "";
+  elements.summary.innerHTML = "";
+  elements.quiz.innerHTML = "";
+  elements.favicon.src = "";
+  elements.title.textContent = "Loading...";
 
   let tabDataResponse = await chrome.runtime.sendMessage({ type: 'getTab' });
   if (chrome.runtime.lastError || !tabDataResponse || !tabDataResponse.success) {
@@ -58,6 +64,7 @@ async function populateData() {
   let tabData = tabDataResponse.tabData;
   elements.favicon.src = tabData.favicon || 'default_favicon.png';
   elements.title.textContent = tabData.title || 'No title available';
+  console.log("Tab data received:", tabData);
 
   let summaryResponse = await chrome.runtime.sendMessage({ type: 'generateSummary', tabData });
   if (chrome.runtime.lastError || !summaryResponse || !summaryResponse.success) {
@@ -66,6 +73,7 @@ async function populateData() {
   }
   summary = summaryResponse.summary;
   elements.summary.textContent = summary || 'No summary available';
+  console.log("Summary received:", summary);
 
   let quizResponse = await chrome.runtime.sendMessage({ type: 'generateQuiz', tabData });
   if (chrome.runtime.lastError || !quizResponse || !quizResponse.success) {
@@ -73,6 +81,8 @@ async function populateData() {
     return;
   }
   let quiz = quizResponse.quiz;
+  console.log("Quiz received:", quiz);
+  
   if (!quiz || !quiz.questions || quiz.questions.length === 0) {
     elements.quiz.textContent = 'No quiz available';
     return;
@@ -84,6 +94,6 @@ async function populateData() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  populateData();
-});
+document.addEventListener('DOMContentLoaded', populateData);
+
+elements.btn.addEventListener('click', populateData);
