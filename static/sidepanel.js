@@ -55,17 +55,17 @@ function updatePageContent(elements, resp) {
 
   // Clear the languages list before adding new items
   elements.languagesForm.innerHTML = '';
-  const languages = [];
+  const languages = new Set();
   if (resp.language) {
-    languages.push({ type: 'article', name: resp.language });
+    languages.add(resp.language);
   }
 
-  languages.push({ type: 'system', name: navigator.language.split('-')[0] });
-  // languages.push({ type: 'language', name: 'English' });
-  // languages.push({ type: 'language', name: 'Español' });
-  // languages.push({ type: 'language', name: 'Français' });
-  // languages.push({ type: 'language', name: 'Deutsch' });
-  // languages.push({ type: 'language', name: 'Italiano' });
+  languages.add(navigator.language.split('-')[0]);
+  languages.add('English');
+  languages.add('Español');
+  languages.add('Français');
+  languages.add('Deutsch');
+  languages.add('Italiano');
   
   // Add language items to the list
   languages.forEach(language => {
@@ -90,11 +90,10 @@ function renderLanguage(language) {
     Object.assign(input, {
       type: 'radio',
       name: 'language',
-      value: language.name,
-      className: language.type,
+      value: language,
     });
     radioItem.appendChild(input);
-    radioItem.appendChild(document.createTextNode(language.name));
+    radioItem.appendChild(document.createTextNode(language));
     return radioItem;
 }
 
