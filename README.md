@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./icons/quizzer_icon_128x128.png" alt="Chrome Quizzer Icon" width="128"/>
+</p>
+
 # Chrome Quizzer
 
 A Chrome extension that automatically generates comprehension quizzes from any article using on-device AI. No internet required for AI processing—everything runs locally in your browser!
