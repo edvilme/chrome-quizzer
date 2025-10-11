@@ -35,6 +35,8 @@ async function acquireModel(ModelClass, options = {}) {
     }
   });
 
+  await modelsCache[ModelClass].ready;
+
   return modelsCache[ModelClass]
 }
 
