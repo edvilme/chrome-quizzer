@@ -16,8 +16,9 @@ let correctAnswers = 0;
  * @returns {HTMLElement} - The DOM element representing the question.
  */
 function renderQuestion(question) {
+  console.log('Rendering question:', question);
   const questionElement = document.createElement('question-component');
-  questionElement.setAttribute('data-question', question.question);
+  questionElement.setAttribute('data-question', question.title);
   questionElement.setAttribute('data-options', JSON.stringify(question.options));
   questionElement.setAttribute('data-answer', question.answer);
   questionElement.addEventListener('answerSelected', (event) => {

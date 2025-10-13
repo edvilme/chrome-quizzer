@@ -13,6 +13,11 @@
     transition: background-color .12s, box-shadow .12s, transform .08s
 }
 
+:host li:hover:not(.disabled):not(.correct):not(.incorrect) {
+    background: color-mix(in srgb, var(--accent) 8%, var(--ui));
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
 :host li.correct {
     background: color-mix(in srgb, #0f6d16 20%, var(--pill));
     border-color: #0f6d16;

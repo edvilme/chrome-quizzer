@@ -4,6 +4,27 @@
  */
 
 class QuestionComponent extends HTMLElement {
+    static get observedAttributes() {
+        return ['data-question', 'data-options', 'data-answer'];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        switch (name){
+            case 'data-question':
+                this.question = newValue;
+                break;
+            case 'data-options':
+                this.options = JSON.parse(newValue || '[]');
+                break;
+            case 'data-answer':
+                this.answer = newValue;
+                break;
+            default:
+                break;
+        }
+        this.render();
+    }
+
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
@@ -11,6 +32,11 @@ class QuestionComponent extends HTMLElement {
         this.options = JSON.parse(this.getAttribute('data-options') || '[]');
         this.answer = this.getAttribute('data-answer') || '';
         this.render();
+        console.log('QuestionComponent initialized with:', {
+            question: this.question,
+            options: this.options,
+            answer: this.answer
+        });
     }
 
     render() {
@@ -63,6 +89,7 @@ class QuestionComponent extends HTMLElement {
         options.forEach(opt => {
             opt.style.pointerEvents = 'none';
             opt.removeEventListener('click', this.validateAnswer);
+            opt.classList.add('disabled');
         });
     }
 }
