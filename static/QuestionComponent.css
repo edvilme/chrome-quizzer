@@ -1,0 +1,32 @@
+:host ul {
+    list-style: none;
+    padding: 0;
+}
+
+:host li {
+    background: var(--pill);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    cursor: pointer;
+    transition: background-color .12s, box-shadow .12s, transform .08s
+}
+
+:host li:hover:not(.disabled):not(.correct):not(.incorrect) {
+    background: color-mix(in srgb, var(--accent) 8%, var(--ui));
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+:host li.correct {
+    background: color-mix(in srgb, #0f6d16 20%, var(--pill));
+    border-color: #0f6d16;
+    color: #0f6d16;
+    font-weight: 600;
+}
+:host li.incorrect {
+    background: color-mix(in srgb, #d32f2f 20%, var(--pill));
+    border-color: #d32f2f;
+    color: #d32f2f;
+    font-weight: 600;
+}

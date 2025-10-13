@@ -16,39 +16,17 @@ let correctAnswers = 0;
  * @returns {HTMLElement} - The DOM element representing the question.
  */
 function renderQuestion(question) {
-  const questionDiv = document.createElement('div');
-  questionDiv.className = 'question';
-
-  const questionText = document.createElement('h3');
-  questionText.textContent = question.title;
-  questionDiv.appendChild(questionText);
-
-  const optionsList = document.createElement('ul');
-  optionsList.className = 'options';
-  questionDiv.appendChild(optionsList);
-
-  question.options.forEach((option) => {
-    const optionItem = document.createElement('li');
-    Object.assign(optionItem, {
-      className: 'option',
-      textContent: option,
-    });
-    optionsList.appendChild(optionItem);
-    optionItem.addEventListener('click', () => validateAnswer(optionItem, question.answer));
+  console.log('Rendering question:', question);
+  const questionElement = document.createElement('question-component');
+  questionElement.setAttribute('data-question', question.title);
+  questionElement.setAttribute('data-options', JSON.stringify(question.options));
+  questionElement.setAttribute('data-answer', question.answer);
+  questionElement.addEventListener('answerSelected', (event) => {
+    const isCorrectAnswer = event.detail.isCorrectAnswer;
+    correctAnswers += isCorrectAnswer ? 1 : 0;
+    elements.score.textContent = `Score: ${correctAnswers}`;
   });
-
-  return questionDiv;
-}
-
-function validateAnswer(optionItem, correctAnswer) {
-  optionItem.classList.add(optionItem.textContent === correctAnswer ? 'correct' : 'incorrect');
-  correctAnswers += optionItem.textContent === correctAnswer ? 1 : 0;
-  elements.score.textContent = `Score: ${correctAnswers}`;
-  // Disable further clicks on all options for this question
-  optionItem.parentElement.querySelectorAll('.option').forEach((opt) => {
-    opt.removeEventListener('click', validateAnswer);
-    opt.style.pointerEvents = 'none';
-  });
+  return questionElement;
 }
 
 async function populateData() {
