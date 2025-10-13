@@ -4,8 +4,11 @@ const elements = {
   summaryTitle: document.getElementById('summary-title'),
   quiz: document.getElementById('quiz'),
   favicon: document.getElementById('tab-favicon'),
-  title: document.getElementById('tab-title')
+  title: document.getElementById('tab-title'),
+  score: document.getElementById('score')
 };
+
+let correctAnswers = 0;
 
 /**
  * Renders a single quiz question as a DOM element.
@@ -31,18 +34,17 @@ function renderQuestion(question) {
       textContent: option,
     });
     optionsList.appendChild(optionItem);
-    optionItem.addEventListener('click', () => validateAnswer(optionItem, option, question.answer));
+    optionItem.addEventListener('click', () => validateAnswer(optionItem, question.answer));
   });
 
   return questionDiv;
 }
 
-function validateAnswer(optionItem, selectedOption, correctAnswer) {
-  if (optionItem.textContent === correctAnswer) {
-    optionItem.classList.add('correct');
-  } else if (optionItem.textContent === selectedOption) {
-    optionItem.classList.add('incorrect');
-  }
+function validateAnswer(optionItem, correctAnswer) {
+  optionItem.classList.add(optionItem.textContent === correctAnswer ? 'correct' : 'incorrect');
+  correctAnswers += optionItem.textContent === correctAnswer ? 1 : 0;
+  elements.score.textContent = `Score: ${correctAnswers}`;
+  // Disable further clicks on all options for this question
   optionItem.parentElement.querySelectorAll('.option').forEach((opt) => {
     opt.removeEventListener('click', validateAnswer);
     opt.style.pointerEvents = 'none';
