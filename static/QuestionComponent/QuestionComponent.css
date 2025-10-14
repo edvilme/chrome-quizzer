@@ -30,3 +30,12 @@
     color: #d32f2f;
     font-weight: 600;
 }
+
+:host .explanation {
+    display: none;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+:host .explanation::before {
+    content: "💡 ";
+}

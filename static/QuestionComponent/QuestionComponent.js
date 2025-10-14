@@ -5,7 +5,7 @@
 
 class QuestionComponent extends HTMLElement {
     static get observedAttributes() {
-        return ['data-question', 'data-options', 'data-answer'];
+        return ['data-question', 'data-options', 'data-answer', 'data-explanation'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -19,6 +19,9 @@ class QuestionComponent extends HTMLElement {
             case 'data-answer':
                 this.answer = newValue;
                 break;
+            case 'data-explanation':
+                this.explanation = newValue;
+                break;
             default:
                 break;
         }
@@ -31,12 +34,8 @@ class QuestionComponent extends HTMLElement {
         this.question = this.getAttribute('data-question') || '';
         this.options = JSON.parse(this.getAttribute('data-options') || '[]');
         this.answer = this.getAttribute('data-answer') || '';
+        this.explanation = this.getAttribute('data-explanation') || '';
         this.render();
-        console.log('QuestionComponent initialized with:', {
-            question: this.question,
-            options: this.options,
-            answer: this.answer
-        });
     }
 
     render() {
@@ -46,7 +45,7 @@ class QuestionComponent extends HTMLElement {
         // Add style
         const style = document.createElement('link');
         Object.assign(style, {
-            href: './QuestionComponent.css',
+            href: './QuestionComponent/QuestionComponent.css',
             rel: 'stylesheet'
         });
         this.shadowRoot.appendChild(style);
@@ -75,6 +74,14 @@ class QuestionComponent extends HTMLElement {
             optionsList.appendChild(optionItem);
         });
         this.shadowRoot.appendChild(optionsList);
+
+        // Explanation (hidden by default, shown after answer selection)
+        if (this.explanation) {
+            const explanationDiv = document.createElement('div');
+            explanationDiv.className = 'explanation';
+            explanationDiv.textContent = this.explanation;
+            this.shadowRoot.appendChild(explanationDiv);
+        }
     }
 
     validateAnswer(optionItem, selectedOption) {
@@ -82,6 +89,11 @@ class QuestionComponent extends HTMLElement {
         this.dispatchEvent(new CustomEvent('answerSelected', {
             detail: { isCorrectAnswer }
         }));
+        // Show explanation if available
+        const explanationDiv = this.shadowRoot.querySelector('.explanation');
+        if (explanationDiv) {
+            explanationDiv.style.display = 'block';
+        }
         // Add feedback
         optionItem.classList.add(isCorrectAnswer ? 'correct' : 'incorrect');
         // Disable all options after selection
@@ -90,6 +102,10 @@ class QuestionComponent extends HTMLElement {
             opt.style.pointerEvents = 'none';
             opt.removeEventListener('click', this.validateAnswer);
             opt.classList.add('disabled');
+            // Highlight the correct answer
+            if (opt.textContent === this.answer) {
+                opt.classList.add('correct');
+            }
         });
     }
 }

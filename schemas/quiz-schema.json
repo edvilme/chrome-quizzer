@@ -18,9 +18,18 @@
           },
           "answer": {
             "type": "string"
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "furtherReadingURLs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
-        "required": ["title", "options", "answer"]
+        "required": ["title", "options", "answer", "explanation"]
       }
     }
   },
