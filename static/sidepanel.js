@@ -16,11 +16,11 @@ let correctAnswers = 0;
  * @returns {HTMLElement} - The DOM element representing the question.
  */
 function renderQuestion(question) {
-  console.log('Rendering question:', question);
   const questionElement = document.createElement('question-component');
   questionElement.setAttribute('data-question', question.title);
   questionElement.setAttribute('data-options', JSON.stringify(question.options));
   questionElement.setAttribute('data-answer', question.answer);
+  questionElement.setAttribute('data-explanation', question.explanation);
   questionElement.addEventListener('answerSelected', (event) => {
     const isCorrectAnswer = event.detail.isCorrectAnswer;
     correctAnswers += isCorrectAnswer ? 1 : 0;

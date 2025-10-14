@@ -18,9 +18,12 @@
           },
           "answer": {
             "type": "string"
+          },
+          "explanation": {
+            "type": "string"
           }
         },
-        "required": ["title", "options", "answer"]
+        "required": ["title", "options", "answer", "explanation"]
       }
     }
   },

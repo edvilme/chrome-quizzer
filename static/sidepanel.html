@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Chrome Quizzer Side Panel</title>
   <link href="sidepanel.css" rel="stylesheet">
-  <script src="QuestionComponent.js" defer></script>
+  <script src="QuestionComponent/QuestionComponent.js" defer></script>
   <script src="sidepanel.js" defer></script>
 </head>
 
@@ -25,6 +25,14 @@
   <div id="quiz"></div>
 
   <div id="score">Score: 0</div>
+
+  <question-component
+    id="sample-question"
+    data-question="What is the capital of France?"
+    data-options='["Berlin", "Madrid", "Paris", "Rome"]'
+    data-answer="Paris"
+    data-explanation="Paris is the capital and most populous city of France."
+  ></question-component>
 </body>
 
 </html>
