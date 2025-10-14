@@ -39,12 +39,6 @@ class QuestionComponent extends HTMLElement {
     }
 
     render() {
-        console.log('QuestionComponent rendered with:', {
-            question: this.question,
-            options: this.options,
-            answer: this.answer,
-            explanation: this.explanation
-        });
         // Clear shadow root
         this.shadowRoot.innerHTML = '';
 
@@ -82,11 +76,12 @@ class QuestionComponent extends HTMLElement {
         this.shadowRoot.appendChild(optionsList);
 
         // Explanation (hidden by default, shown after answer selection)
-
+        if (this.explanation) {
             const explanationDiv = document.createElement('div');
             explanationDiv.className = 'explanation';
             explanationDiv.textContent = this.explanation;
             this.shadowRoot.appendChild(explanationDiv);
+        }
     }
 
     validateAnswer(optionItem, selectedOption) {
