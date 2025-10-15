@@ -1,4 +1,13 @@
 {
+  "name": "chrome-quizzer",
+  "version": "0.1.0",
+  "description": "Reader view and instant comprehension quizzes generated locally with Chrome's on-device LLM.",
+  "license": "MIT",
+  "author": "Eduardo Villalpando Mello <eduardo.villalpando.mello@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edvilme/chrome-quizzer.git"
+  },
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
     "linkedom": "^0.18.12"
