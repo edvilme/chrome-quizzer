@@ -68,6 +68,12 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => { });
 }
 
+// Open the dashboard when the user enters a keyword in the omnibox
+chrome.omnibox.onInputEntered.addListener(() => {
+  const dashboardUrl = chrome.runtime.getURL('static/dashboard/dashboard.html');
+  chrome.tabs.create({ url: dashboardUrl });
+});
+
 // Listen for messages from the side panel (or other extension pages)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type == 'getTab') {
