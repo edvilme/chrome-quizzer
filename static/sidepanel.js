@@ -29,7 +29,7 @@ async function addAnswerHistoryToStorage(entry) {
 /**
  * Renders a single quiz question as a DOM element.
  * @param {Object} question - The question object containing title and options.
- * @param {Object} quiz - The quiz object containing metadata like quizId and quizTopic.
+ * @param {Object} quiz - The quiz object containing metadata like quizUuid and quizCategory.
  * @returns {HTMLElement} - The DOM element representing the question.
  */
 function renderQuestion(question, quiz) {
