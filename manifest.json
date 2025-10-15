@@ -12,13 +12,17 @@
     "activeTab",
     "scripting",
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "omnibox"
   ],
+  "omnibox": {
+    "keyword": "quizzer"
+  },
   "host_permissions": [
     "<all_urls>"
   ],
   "side_panel": {
-    "default_path": "static/sidepanel.html"
+    "default_path": "static/sidepanel/sidepanel.html"
   },
   "background": {
     "service_worker": "dist/service_worker.js"
