@@ -6,12 +6,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Chrome Quizzer Side Panel</title>
   <link href="sidepanel.css" rel="stylesheet">
-  <script src="QuestionComponent/QuestionComponent.js" defer></script>
+  <script src="../QuestionComponent/QuestionComponent.js" defer></script>
   <script src="sidepanel.js" defer></script>
 </head>
 
 <body>
-  <button id="get-article">Generate Quiz</button>
+  <div class="sidepanel-actions">
+    <button id="get-article">Generate Quiz</button>
+    <button id="open-dashboard">Open Dashboard</button>
+  </div>
 
   <div id="tab-pill">
     <img id="tab-favicon" src="" alt="Favicon" />

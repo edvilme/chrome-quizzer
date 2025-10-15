@@ -1,5 +1,6 @@
 const elements = {
   btn: document.getElementById('get-article'),
+  openDashboardBtn: document.getElementById('open-dashboard'),
   summary: document.getElementById('summary'),
   summaryTitle: document.getElementById('summary-title'),
   quiz: document.getElementById('quiz'),
@@ -123,3 +124,19 @@ async function populateData() {
 // Event listeners
 document.addEventListener('DOMContentLoaded', populateData);
 elements.btn.addEventListener('click', populateData);
+
+if (elements.openDashboardBtn) {
+  elements.openDashboardBtn.addEventListener('click', () => {
+    const dashboardUrl = chrome.runtime.getURL('static/dashboard/dashboard.html');
+    chrome.tabs.query({}, (tabs) => {
+      const existingTab = tabs.find(tab => tab.url === dashboardUrl);
+      if (existingTab) {
+        chrome.tabs.update(existingTab.id, { active: true }, () => {
+          chrome.windows.update(existingTab.windowId, { focused: true });
+        });
+      } else {
+        chrome.tabs.create({ url: dashboardUrl });
+      }
+    });
+  });
+}
