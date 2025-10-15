@@ -31,7 +31,16 @@
         },
         "required": ["title", "options", "answer", "explanation"]
       }
+    },
+    "quizUuid": {
+      "type": "string",
+      "description": "A uuid for the quiz",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "quizCategory": {
+      "type": "string",
+      "description": "The category of the quiz. E.g., 'JavaScript', 'HTML', 'CSS', 'Web Development', 'Technology', etc."
     }
   },
-  "required": ["questions"]
+  "required": ["questions", "quizUuid", "quizCategory"]
 }

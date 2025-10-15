@@ -29,9 +29,10 @@ async function addAnswerHistoryToStorage(entry) {
 /**
  * Renders a single quiz question as a DOM element.
  * @param {Object} question - The question object containing title and options.
+ * @param {Object} quiz - The quiz object containing metadata like quizUuid and quizCategory.
  * @returns {HTMLElement} - The DOM element representing the question.
  */
-function renderQuestion(question) {
+function renderQuestion(question, quiz) {
   const questionElement = document.createElement('question-component');
   questionElement.setAttribute('data-question', question.title);
   questionElement.setAttribute('data-options', JSON.stringify(question.options));
@@ -48,6 +49,8 @@ function renderQuestion(question) {
       selectedAnswer: event.detail.selectedAnswer,
       correctAnswer: question.answer,
       isCorrect: isCorrectAnswer,
+      quizUuid: quiz.quizUuid || 'unknown_quiz',
+      quizCategory: quiz.quizCategory || 'unknown_category',
       timestamp: new Date().toISOString()
     });
 
@@ -111,7 +114,7 @@ async function populateData() {
   }
   elements.quiz.innerHTML = '';
   quiz.questions.forEach((question) => {
-    const questionElement = renderQuestion(question);
+    const questionElement = renderQuestion(question, quiz);
     elements.quiz.appendChild(questionElement);
   });
 }

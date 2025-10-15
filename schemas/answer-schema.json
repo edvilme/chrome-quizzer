@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "question": {
+            "type": "string"
+        },
+        "selectedAnswer": {
+            "type": "string"
+        },
+        "correctAnswer": {
+            "type": "string"
+        },
+        "isCorrect": {
+            "type": "boolean"
+        },
+        "quizUuid": {
+            "type": "string",
+            "description": "A uuid for the quiz",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        },
+        "quizCategory": {
+            "type": "string",
+            "description": "The category of the quiz. E.g., 'JavaScript', 'HTML', 'CSS', 'Web Development', 'Technology', etc."
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the answer was submitted."
+        }
+    },
+    "required": ["question", "selectedAnswer", "correctAnswer", "isCorrect", "quizUuid", "quizCategory", "timestamp"]
+}
