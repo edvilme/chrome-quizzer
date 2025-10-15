@@ -7,8 +7,24 @@ const elements = {
   title: document.getElementById('tab-title'),
   score: document.getElementById('score')
 };
+const answerHistoryMaxLength = 100;
 
 let correctAnswers = 0;
+
+/**
+ * Persistently stores quiz answer metadata, trimming history to the latest entries.
+ * @param {{ question: string; selectedAnswer: string; correctAnswer: string; isCorrect: boolean; timestamp: string }} entry
+ * @returns {Promise<void>}
+ */
+async function addAnswerHistoryToStorage(entry) {
+  const { answerHistory = [] } = await chrome.storage.local.get('answerHistory');
+  answerHistory.push(entry);
+  // Keep only the latest entries
+  if (answerHistory.length > answerHistoryMaxLength) {
+    answerHistory.splice(0, answerHistory.length - answerHistoryMaxLength);
+  }
+  await chrome.storage.local.set({ answerHistory });
+}
 
 /**
  * Renders a single quiz question as a DOM element.
@@ -21,14 +37,28 @@ function renderQuestion(question) {
   questionElement.setAttribute('data-options', JSON.stringify(question.options));
   questionElement.setAttribute('data-answer', question.answer);
   questionElement.setAttribute('data-explanation', question.explanation);
-  questionElement.addEventListener('answerSelected', (event) => {
+
+  questionElement.addEventListener('answerSelected', async (event) => {
     const isCorrectAnswer = event.detail.isCorrectAnswer;
     correctAnswers += isCorrectAnswer ? 1 : 0;
     elements.score.textContent = `Score: ${correctAnswers}`;
+
+    await addAnswerHistoryToStorage({
+      question: question.title,
+      selectedAnswer: event.detail.selectedAnswer,
+      correctAnswer: question.answer,
+      isCorrect: isCorrectAnswer,
+      timestamp: new Date().toISOString()
+    });
+
   });
   return questionElement;
 }
 
+/**
+ * Pulls tab information, generates summary and quiz content, and updates the panel.
+ * @returns {Promise<void>}
+ */
 async function populateData() {
   // Clear previous content
   elements.summaryTitle.innerText = "";
@@ -86,6 +116,7 @@ async function populateData() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', populateData);
 
+// Event listeners
+document.addEventListener('DOMContentLoaded', populateData);
 elements.btn.addEventListener('click', populateData);

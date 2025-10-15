@@ -84,10 +84,10 @@ class QuestionComponent extends HTMLElement {
         }
     }
 
-    validateAnswer(optionItem, selectedOption) {
-        const isCorrectAnswer = selectedOption === this.answer;
+    validateAnswer(optionItem, selectedAnswer) {
+        const isCorrectAnswer = selectedAnswer === this.answer;
         this.dispatchEvent(new CustomEvent('answerSelected', {
-            detail: { isCorrectAnswer }
+            detail: { isCorrectAnswer, selectedAnswer }
         }));
         // Show explanation if available
         const explanationDiv = this.shadowRoot.querySelector('.explanation');
