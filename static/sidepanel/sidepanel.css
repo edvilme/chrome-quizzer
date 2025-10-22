@@ -13,6 +13,10 @@
     line-height: 1.6
 }
 
+#crossword {
+    overflow: auto;
+}
+
 /* Tab pill - shows active tab favicon and title */
 #tab-pill {
     display: flex;
@@ -118,24 +122,3 @@ hr.strong {
 hr:has(+ #quiz:empty) {
     display: none;
 }
-
-/* Status-based visibility control */
-/* body[data-status="empty"] > *,
-body[data-status="loading"] > * {
-    display: none !important;
-}
-body[data-status="empty"] > button,
-body[data-status="loading"] > button {
-    display: initial !important;
-}
-
-body[data-status="loading"] > button {
-    cursor: wait;
-    background: color-mix(in srgb, var(--accent) 20%, var(--ui));
-}
-body[data-status="loading"] > #loading {
-    display: block !important;
-}
-body[data-status="loaded"] > #loading {
-    display: none !important;
-} */

@@ -5,6 +5,9 @@
 
 import quizSchema from '../schemas/quiz-schema.json' assert { type: 'json' };
 import dashboardCategorySchema from '../schemas/dashboard-category-schema.json' assert { type: 'json' };
+import crosswordSchema from '../schemas/crossword-schema.json' assert { type: 'json' };
+
+import { generateLayout } from 'crossword-layout-generator';
 
 const SUGGESTIONS_INITIAL_PROMPT = `
 You are an expert at generating helpful suggestions for users based on their previous answers to quizzes.
@@ -32,6 +35,13 @@ async function generateQuiz(languageModel, articleText) {
   return JSON.parse(response);
 }
 
+/**
+ * Generates personalized suggestions based on past quiz answers.
+ * @param {Object} languageModel - The language model instance
+ * @param {Array} answers - Array of past quiz answers
+ * @returns {Promise<Object>} The generated suggestions object
+ * @throws {Error} If suggestion generation or parsing fails
+ */
 async function generateSuggestions(languageModel, answers) {
   await languageModel.append({
     role: 'system',
@@ -59,4 +69,28 @@ async function generateSuggestions(languageModel, answers) {
   return JSON.parse(response);
 }
 
-export { generateQuiz, generateSuggestions };
+/**
+ * Generates a crossword puzzle layout from article text using the language model.
+ * @param {Object} languageModel - The language model instance
+ * @param {string} articleText - The article content to generate crossword from
+ * @returns {Promise<Object>} The generated crossword layout
+ * @throws {Error} If crossword generation or parsing fails
+ */
+async function generateCrossword(languageModel, articleText) {
+  const promptText = `
+    Give me some words and their hints based off this article to create a crossword puzzle.
+    ${articleText}
+  `;
+
+  const response = await languageModel.prompt(promptText, {
+    responseConstraint: crosswordSchema
+  });
+
+  const crosswordData = JSON.parse(response);
+  console.log("Crossword data:", crosswordData);
+  const layout = generateLayout(crosswordData);
+  return layout;
+}
+
+
+export { generateQuiz, generateSuggestions, generateCrossword };

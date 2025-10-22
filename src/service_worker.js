@@ -5,7 +5,7 @@
  * between the extension's components and the Chrome browser.
  */
 
-import { generateQuiz, generateSuggestions } from "./LanguageModel.js";
+import { generateQuiz, generateSuggestions, generateCrossword } from "./LanguageModel.js";
 import { summarizeText } from "./Summarizer.js";
 import { extractTabData } from "./TabExtractor.js";
 import { acquireModel } from "./ModelAcquisition.js";
@@ -119,6 +119,34 @@ async function preloadSuggestionsData(callback = () => {}) {
 }
 
 /**
+ * Generates crossword data based on the given tab data.
+ * @param {Object} tabData - The data extracted from the tab.
+ * @param {Object} message - The message object sent to the service worker.
+ * @param {Object} sender - The sender of the message.
+ * @param {Function} sendResponse - Callback to send a response back to the sender.
+ * @returns {Promise<Object|null>} - The generated crossword data or null in case of an error.
+ */
+async function generateCrosswordData(tabData, message, sender, sendResponse) {
+  const { article } = tabData;
+  let languageModel;
+  try {
+    languageModel = await acquireModel(LanguageModel, {}, 'crossword-generator');
+  } catch (err) {
+    sendResponse({ success: false, error: 'Failed to load language model' });
+    return;
+  }
+  let crosswordLayout;
+  try {
+    crosswordLayout = await generateCrossword(languageModel, article.textContent);
+    sendResponse({ success: true, crosswordLayout });
+    return crosswordLayout;
+  } catch (err) {
+    sendResponse({ success: false, error: 'Failed to generate crossword', err });
+    return;
+  }
+}
+
+/**
  * Generates suggestions based on cached or newly preloaded data.
  * @param {Object} message - The message object sent to the service worker.
  * @param {Object} sender - The sender of the message.
@@ -184,6 +212,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("Generating suggestions for message:", message);
     generateSuggestionsData(message, sender, sendResponse).then((suggestions) => {
       console.log("Suggestions generated:", suggestions);
+    });
+    return true; // Indicate that we will respond asynchronously
+  }
+  if (message?.type == 'generateCrossword') {
+    console.log("Generating crossword for message:", message);
+    const tabData = message.tabData;
+    generateCrosswordData(tabData, message, sender, sendResponse).then((crosswordLayout) => {
+      console.log("Crossword generated:", crosswordLayout);
     });
     return true; // Indicate that we will respond asynchronously
   }
