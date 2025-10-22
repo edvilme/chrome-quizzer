@@ -67,3 +67,63 @@ h1 {
     margin: 24px 0 12px;
     color: inherit
 }
+
+/* Dashboard-specific styles */
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--accent);
+}
+
+/* .dashboard-suggestions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+} */
+
+.suggestion-item {
+    background: var(--ui);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.suggestion-item h1 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.suggestion-item h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: var(--text-secondary);
+}
+
+.suggestion-item .follow-up-searches {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+    gap: 8px;
+    overflow: auto;
+}
+
+.suggestion-item .follow-up-searches li {
+    padding: 8px 16px;
+    background: var(--pill);
+    border-radius: 16px;
+    white-space: nowrap;
+}
+
+.suggestion-item .follow-up-searches li::before {
+    content: "🔍 ";
+}
