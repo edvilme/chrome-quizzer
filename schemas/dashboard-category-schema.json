@@ -32,7 +32,7 @@
             },
             "score": {
                 "type": "number",
-                "description": "Score achieved in this category.",
+                "description": "Percentage of correct answers in this category, where 100% is all correct answers.",
                 "minimum": 0,
                 "maximum": 100
             },
