@@ -26,15 +26,18 @@ When analyzing past answers, I will:
  * @throws {Error} If quiz generation or parsing fails
  */
 async function generateQuiz(languageModel, articleText) {
+  // Clone the language model to avoid interfering with other tasks
+  const session = await languageModel.clone();
   const promptText = `
     Generate a quiz based on this article.
     ${articleText}
   `;
 
-  const response = await languageModel.prompt(promptText, {
+  const response = await session.prompt(promptText, {
     responseConstraint: quizSchema
   });
-  
+
+  await session.destroy();
   return JSON.parse(response);
 }
 
@@ -46,11 +49,13 @@ async function generateQuiz(languageModel, articleText) {
  * @throws {Error} If suggestion generation or parsing fails
  */
 async function generateSuggestions(languageModel, answers) {
-  await languageModel.append({
+  // Clone the language model to avoid interfering with other tasks
+  const session = await languageModel.clone();
+  await session.append({
     role: 'system',
     content: SUGGESTIONS_INITIAL_PROMPT
   });
-  await languageModel.append(
+  await session.append(
     answers
       .filter(answer => answer && answer.quizCategory)
       .map(({correctAnswer, question, selectedAnswer, isCorrect}) => {
@@ -66,9 +71,10 @@ async function generateSuggestions(languageModel, answers) {
       })
   );
 
-  const response = await languageModel.prompt("Generate suggestions.", {
+  const response = await session.prompt("Generate suggestions.", {
     responseConstraint: dashboardCategorySchema
   });
+  await session.destroy();
   return JSON.parse(response);
 }
 
@@ -80,15 +86,18 @@ async function generateSuggestions(languageModel, answers) {
  * @throws {Error} If crossword generation or parsing fails
  */
 async function generateCrossword(languageModel, articleText) {
+  // Clone the language model to avoid interfering with other tasks
+  const session = await languageModel.clone();
   const promptText = `
     Give me some words and their hints based off this article to create a crossword puzzle.
     ${articleText}
   `;
 
-  const response = await languageModel.prompt(promptText, {
+  const response = await session.prompt(promptText, {
     responseConstraint: crosswordSchema
   });
 
+  await session.destroy();
   const crosswordData = JSON.parse(response);
   console.log("Crossword data:", crosswordData);
   const layout = generateLayout(crosswordData);
