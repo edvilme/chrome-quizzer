@@ -7,7 +7,7 @@
         "properties": {
             "category": {
                 "type": "string",
-                "description": "The name of the quiz category."
+                "description": "The name of the quiz category. (e.g., sports, technology, astronomy, economics)"
             },
             "category_emoji": {
                 "type": "string",
