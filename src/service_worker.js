@@ -1,4 +1,4 @@
-import { generateQuiz } from "./LanguageModel.js";
+import { generateQuiz, generateSuggestions } from "./LanguageModel.js";
 import { summarizeText } from "./Summarizer.js";
 import { extractTabData } from "./TabExtractor.js";
 import { acquireModel } from "./ModelAcquisition.js";
@@ -60,6 +60,34 @@ async function generateQuizData(tabData, message, sender, sendResponse) {
   }
 }
 
+async function generateSuggestionsData(message, sender, sendResponse) {
+  let languageModel;
+  try {
+    languageModel = await acquireModel(LanguageModel);
+  } catch (err) {
+    sendResponse({ success: false, error: 'Failed to load language model' });
+    return;
+  }
+  const answers = (await chrome.storage.local.get('answerHistory')).answerHistory || [];
+  let suggestions;
+  try {
+    suggestions = await generateSuggestions(languageModel, answers);
+    // Send notification of success
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('icons/quizzer_icon_128x128.png'),
+      title: 'Suggestions Generated',
+      message: 'New suggestions have been generated based on your answer history.'
+    });
+
+    sendResponse({ success: true, suggestions });
+    return suggestions;
+  } catch (err) {
+    sendResponse({ success: false, error: 'Failed to generate suggestions', err });
+    return;
+  }
+}
+
 // Allows users to open the side panel by clicking on the action toolbar icon
 // Prefer the declarative behavior, and also register an explicit click handler
 // as a fallback for environments that don't open the panel automatically.
@@ -95,6 +123,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const tabData = message.tabData;
     generateQuizData(tabData, message, sender, sendResponse).then((quiz) => {
       console.log("Quiz generated:", quiz);
+    });
+    return true; // Indicate that we will respond asynchronously
+  }
+  if (message?.type == 'generateSuggestions') {
+    console.log("Generating suggestions for message:", message);
+    generateSuggestionsData(message, sender, sendResponse).then((suggestions) => {
+      console.log("Suggestions generated:", suggestions);
     });
     return true; // Indicate that we will respond asynchronously
   }
