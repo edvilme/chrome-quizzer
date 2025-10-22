@@ -6,7 +6,8 @@ const elements = {
   quiz: document.getElementById('quiz'),
   favicon: document.getElementById('tab-favicon'),
   title: document.getElementById('tab-title'),
-  score: document.getElementById('score')
+  score: document.getElementById('score'),
+  crossword: document.getElementById('crossword')
 };
 const answerHistoryMaxLength = 100;
 
@@ -95,6 +96,22 @@ async function populateData() {
   elements.summary.textContent = summary || 'No summary available';
   console.log("Summary received:", summary);
 
+  let crossword
+  try {
+    let crosswordResponse = await chrome.runtime.sendMessage({ type: 'generateCrossword', tabData });
+    console.log("Crossword response:", crosswordResponse);
+    crossword = crosswordResponse.crosswordLayout;
+    if (chrome.runtime.lastError || !crosswordResponse || !crosswordResponse.success) {
+      throw new Error(crosswordResponse.error);
+    }
+  } catch (error) {
+    console.error("Error generating crossword:", error);
+    document.body.setAttribute('data-status', 'error');
+    return;
+  }
+  elements.crossword.innerHTML = crossword.table_string || 'No crossword available';
+  console.log("Crossword received:", crossword);
+
   let quiz
   try {
     let quizResponse = await chrome.runtime.sendMessage({ type: 'generateQuiz', tabData });
@@ -118,6 +135,8 @@ async function populateData() {
     const questionElement = renderQuestion(question, quiz);
     elements.quiz.appendChild(questionElement);
   });
+
+  
 }
 
 
