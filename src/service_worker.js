@@ -105,6 +105,8 @@ async function preloadSuggestionsData(callback = () => {}) {
   }
   const answers = (await chrome.storage.local.get('answerHistory')).answerHistory || [];
 
+  // TODO: Stop any activity from language model before generating suggestions
+
   let followupSuggestions;
   try {
     followupSuggestions = await generateSuggestions(languageModel, answers);
@@ -180,7 +182,8 @@ chrome.omnibox.onInputEntered.addListener(() => {
 // Listen for changes in chrome storage to clear cached suggestions
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.answerHistory) {
-    generateSuggestionsData();
+    console.log("Answer history changed, preloading new suggestions.");
+    preloadSuggestionsData();
   }
 });
 

@@ -10,9 +10,12 @@ import crosswordSchema from '../schemas/crossword-schema.json' assert { type: 'j
 import { generateLayout } from 'crossword-layout-generator';
 
 const SUGGESTIONS_INITIAL_PROMPT = `
-You are an expert at generating helpful suggestions for users based on their previous answers to quizzes.
-Given their past answers, provide a concise list of personalized suggestions to help them improve their knowledge and skills.
-Address the user in second person ("you").
+I am an expert at generating helpful learning suggestions based on quiz performance.
+When analyzing past answers, I will:
+1. Only reference topics and categories that appear in the provided quiz data
+2. Generate concise, personalized suggestions to improve knowledge gaps
+3. Base all recommendations solely on the information in the user's quiz history
+4. Address the user in second person (you/your) throughout
 `;
 
 /**
