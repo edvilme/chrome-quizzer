@@ -17,7 +17,7 @@ async function getAnswerHistory() {
         score.textContent = `Score: ${suggestion.score}`;
 
         const summary = document.createElement('div');
-        summary.innerHTML = suggestion.summary;
+        summary.textContent = suggestion.summary;
 
         const considerList = document.createElement('ul');
         const considerTitle = document.createElement('strong');
