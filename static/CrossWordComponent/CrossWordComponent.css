@@ -30,11 +30,11 @@
     background: var(--ui);
 }
 
-:host table td[data-answer] {
+:host table td[data-answer]:not(:empty) {
     background: red;
 }
 
-:host table td[data-answer].correct {
+:host table td[data-answer]:not(:empty).correct {
     background: green;
 }
 
