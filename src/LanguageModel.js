@@ -4,7 +4,7 @@
  */
 
 import quizSchema from '../schemas/quiz-schema.json' assert { type: 'json' };
-import dashboardSummarySchema from '../schemas/dashboard-summary-schema.json' assert { type: 'json' };
+import dashboardCategorySchema from '../schemas/dashboard-category-schema.json' assert { type: 'json' };
 
 /**
  * Generates a quiz from article text using the language model.
@@ -14,21 +14,12 @@ import dashboardSummarySchema from '../schemas/dashboard-summary-schema.json' as
  * @throws {Error} If quiz generation or parsing fails
  */
 async function generateQuiz(languageModel, articleText) {
-  const initialPrompt = `
-    I am an expert quiz generator. Given an article, I will create a quiz with 20 questions that test comprehension and critical thinking about the article's content.
-    Each question will have 4 answer choices (A, B, C, D) with one correct answer.
+  const promptText = `
+    Generate a quiz based on this article.
+    ${articleText}
   `;
-  
-  await languageModel.append({
-    role: 'system',
-    content: initialPrompt
-  });
-  await languageModel.append({
-    role: 'user',
-    content: articleText
-  });
 
-  const response = await languageModel.prompt(`    Quiz:`, {
+  const response = await languageModel.prompt(promptText, {
     responseConstraint: quizSchema
   });
   
@@ -39,7 +30,8 @@ async function generateSuggestions(languageModel, answers) {
   const initialPrompt = `
     I am an expert at generating helpful suggestions for you based on your previous answers to quizzes. 
     Given your past answers, I will provide a concise list of personalized suggestions to help you improve 
-    your knowledge and skills. I will address you in second person ("you").
+    your knowledge and skills. I will only address you in second person ("you"). I will avoid repeating questions. Until you tell me "generate suggestions",
+    I will not provide any suggestions and only wait for further input. 
   `;
 
   await languageModel.append({
@@ -49,17 +41,21 @@ async function generateSuggestions(languageModel, answers) {
   await languageModel.append(
     answers
       .filter(answer => answer && answer.quizCategory)
-      .map(answer => {
-        console.log("Processing answer for suggestions:", answer);
+      .map(({correctAnswer, question, selectedAnswer, isCorrect}) => {
         return {
           role: 'user',
-          content: JSON.stringify(answer)
+          content: `
+          Consider this past answer I gave in a quiz:
+          \`\`\`json
+            ${JSON.stringify({correctAnswer, question, selectedAnswer, isCorrect})}
+          \`\`\`
+          `
         };
       })
   );
 
-  const response = await languageModel.prompt(`    Suggestions:`, {
-    responseConstraint: dashboardSummarySchema
+  const response = await languageModel.prompt("Generate suggestions.", {
+    responseConstraint: dashboardCategorySchema
   });
   return JSON.parse(response);
 }

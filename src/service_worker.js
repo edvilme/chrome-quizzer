@@ -22,7 +22,7 @@ async function generateSummary(tabData, message, sender, sendResponse) {
       type: "tldr",
       length: "long",
       format: "markdown"
-    });
+    }, 'summarizer');
   } catch (err) {
     sendResponse({ success: false, error: 'Failed to load summarization model' });
     return;
@@ -43,7 +43,7 @@ async function generateQuizData(tabData, message, sender, sendResponse) {
   const { article } = tabData;
   let languageModel;
   try {
-    languageModel = await acquireModel(LanguageModel);
+    languageModel = await acquireModel(LanguageModel, {}, 'quiz-generator');
   } catch (err) {
     sendResponse({ success: false, error: 'Failed to load language model' });
     return;
@@ -63,12 +63,13 @@ async function generateQuizData(tabData, message, sender, sendResponse) {
 async function generateSuggestionsData(message, sender, sendResponse) {
   let languageModel;
   try {
-    languageModel = await acquireModel(LanguageModel);
+    languageModel = await acquireModel(LanguageModel, {}, 'suggestion-generator');
   } catch (err) {
     sendResponse({ success: false, error: 'Failed to load language model' });
     return;
   }
   const answers = (await chrome.storage.local.get('answerHistory')).answerHistory || [];
+
   let suggestions;
   try {
     suggestions = await generateSuggestions(languageModel, answers);
