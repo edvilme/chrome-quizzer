@@ -109,8 +109,14 @@ async function populateData() {
     document.body.setAttribute('data-status', 'error');
     return;
   }
-  elements.crossword.innerHTML = crossword.table_string || 'No crossword available';
-  console.log("Crossword received:", crossword);
+  const crosswordComponent = document.createElement('cross-word-component');
+  crosswordComponent.setAttribute('data-crossword', JSON.stringify(crossword.result || []));
+  crosswordComponent.setAttribute('data-crossword-rows', crossword.rows || 10);
+  crosswordComponent.setAttribute('data-crossword-cols', crossword.cols || 10);
+  elements.crossword.innerHTML = '';
+  elements.crossword.appendChild(crosswordComponent);
+  // elements.crossword.innerHTML = crossword.table_string || 'No crossword available';
+  // console.log("Crossword received:", crossword);
 
   let quiz
   try {

@@ -8,7 +8,8 @@
   <link href="../style.css" rel="stylesheet">
   <link href="sidepanel.css" rel="stylesheet">
   <script src="../QuestionComponent/QuestionComponent.js" defer></script>
-  <script src="sidepanel.js" defer></script>
+  <script src="../CrossWordComponent/CrossWordComponent.js" defer></script>
+  <!-- <script src="sidepanel.js" defer></script> -->
 </head>
 
 <body>
@@ -29,7 +30,11 @@
   <div id="quiz"></div>
 
   <hr>
-  <div id="crossword"></div>
+  <div id="crossword">
+    <cross-word-component
+      data-crossword="[{&quot;clue&quot;:&quot;Toronto team's recent playoff win&quot;,&quot;answer&quot;:&quot;BlueJays&quot;,&quot;startx&quot;:18,&quot;starty&quot;:9,&quot;orientation&quot;:&quot;down&quot;,&quot;position&quot;:1},{&quot;clue&quot;:&quot;Game 7 of the AL Championship&quot;,&quot;answer&quot;:&quot;ALCS&quot;,&quot;startx&quot;:8,&quot;starty&quot;:12,&quot;orientation&quot;:&quot;down&quot;,&quot;position&quot;:2},{&quot;clue&quot;:&quot;Seattle team's loss&quot;,&quot;answer&quot;:&quot;Mariners&quot;,&quot;startx&quot;:9,&quot;starty&quot;:7,&quot;orientation&quot;:&quot;across&quot;,&quot;position&quot;:3},{&quot;clue&quot;:&quot;Springer's hitting feat&quot;,&quot;answer&quot;:&quot;Homer&quot;,&quot;startx&quot;:11,&quot;starty&quot;:12,&quot;orientation&quot;:&quot;down&quot;,&quot;position&quot;:4},{&quot;clue&quot;:&quot;Baseball Reference stat&quot;,&quot;answer&quot;:&quot;cWPA&quot;,&quot;startx&quot;:5,&quot;starty&quot;:12,&quot;orientation&quot;:&quot;across&quot;,&quot;position&quot;:5},{&quot;clue&quot;:&quot;1992 ALCS winner&quot;,&quot;answer&quot;:&quot;BlueJays&quot;,&quot;startx&quot;:7,&quot;starty&quot;:1,&quot;orientation&quot;:&quot;down&quot;,&quot;position&quot;:6},{&quot;clue&quot;:&quot;1993 World Series homer&quot;,&quot;answer&quot;:&quot;Carter&quot;,&quot;startx&quot;:1,&quot;starty&quot;:10,&quot;orientation&quot;:&quot;across&quot;,&quot;position&quot;:7},{&quot;clue&quot;:&quot;1992 NLCS winner&quot;,&quot;answer&quot;:&quot;Brewers&quot;,&quot;startx&quot;:5,&quot;starty&quot;:4,&quot;orientation&quot;:&quot;across&quot;,&quot;position&quot;:8},{&quot;clue&quot;:&quot;Yankees' 1976 ALCS win&quot;,&quot;answer&quot;:&quot;Chambliss&quot;,&quot;startx&quot;:8,&quot;starty&quot;:14,&quot;orientation&quot;:&quot;across&quot;,&quot;position&quot;:9},{&quot;clue&quot;:&quot;Brewers' 1982 ALCS lead&quot;,&quot;answer&quot;:&quot;Cooper&quot;,&quot;startx&quot;:14,&quot;starty&quot;:12,&quot;orientation&quot;:&quot;across&quot;,&quot;position&quot;:10},{&quot;clue&quot;:&quot;Phillies' 1980 NLCS lead&quot;,&quot;answer&quot;:&quot;Trillo&quot;,&quot;startx&quot;:15,&quot;starty&quot;:10,&quot;orientation&quot;:&quot;across&quot;,&quot;position&quot;:11},{&quot;clue&quot;:&quot;Cardinals' 1985 NLCS win&quot;,&quot;answer&quot;:&quot;Clark&quot;,&quot;startx&quot;:13,&quot;starty&quot;:13,&quot;orientation&quot;:&quot;down&quot;,&quot;position&quot;:12},{&quot;clue&quot;:&quot;Cardinals' NLCS pennant&quot;,&quot;answer&quot;:&quot;Molina&quot;,&quot;startx&quot;:2,&quot;starty&quot;:6,&quot;orientation&quot;:&quot;across&quot;,&quot;position&quot;:13},{&quot;clue&quot;:&quot;Dodgers' 1981 NLCS win&quot;,&quot;answer&quot;:&quot;Monday&quot;,&quot;startx&quot;:2,&quot;starty&quot;:6,&quot;orientation&quot;:&quot;down&quot;,&quot;position&quot;:13},{&quot;clue&quot;:&quot;Reds' 1972 NLCS win&quot;,&quot;answer&quot;:&quot;Bench&quot;,&quot;startx&quot;:5,&quot;starty&quot;:9,&quot;orientation&quot;:&quot;down&quot;,&quot;position&quot;:14},{&quot;clue&quot;:&quot;Giants' 1951 NL pennant&quot;,&quot;answer&quot;:&quot;Thomson&quot;,&quot;startx&quot;:15,&quot;starty&quot;:10,&quot;orientation&quot;:&quot;down&quot;,&quot;position&quot;:11},{&quot;clue&quot;:&quot;Braves' 1992 NLCS win&quot;,&quot;answer&quot;:&quot;Cabrera&quot;,&quot;startx&quot;:10,&quot;starty&quot;:1,&quot;orientation&quot;:&quot;down&quot;,&quot;position&quot;:15}]"
+      data-crossword-rows="17" data-crossword-cols="20"></cross-word-component>
+  </div>
 
   <div id="score">Score: 0</div>
 </body>
