@@ -95,7 +95,7 @@ async function generateQuizData(tabData, message, sender, sendResponse) {
  * @param {Function} callback - Callback to send a response back to the sender.
  * @returns {Promise<Object|null>} - The preloaded suggestions or null in case of an error.
  */
-async function preloadSuggestionsData(callback) {
+async function preloadSuggestionsData(callback = () => {}) {
   let languageModel;
   try {
     languageModel = await acquireModel(LanguageModel, {}, 'suggestion-generator');
@@ -129,7 +129,7 @@ async function generateSuggestionsData(message, sender, sendResponse) {
   // Check for cached suggestions
   const cachedData = await chrome.storage.local.get('followupSuggestions');
   if (cachedData.followupSuggestions) {
-    sendResponse({ success: true, suggestions: cachedData.followupSuggestions });
+    sendResponse?.({ success: true, suggestions: cachedData.followupSuggestions });
     return cachedData.followupSuggestions;
   }
   return await preloadSuggestionsData(sendResponse);
