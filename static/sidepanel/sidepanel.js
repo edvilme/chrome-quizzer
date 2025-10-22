@@ -102,7 +102,7 @@ async function populateData() {
     console.log("Crossword response:", crosswordResponse);
     crossword = crosswordResponse.crosswordLayout;
     if (chrome.runtime.lastError || !crosswordResponse || !crosswordResponse.success) {
-      throw new Error(crosswordResponse.error);
+      throw new Error(crosswordResponse?.error || 'Unknown error');
     }
   } catch (error) {
     console.error("Error generating crossword:", error);
