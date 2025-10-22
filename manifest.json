@@ -13,7 +13,9 @@
     "scripting",
     "storage",
     "unlimitedStorage",
-    "omnibox"
+    "omnibox",
+    "notifications",
+    "search"
   ],
   "omnibox": {
     "keyword": "quizzer"

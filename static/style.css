@@ -31,6 +31,11 @@ body {
     color: var(--text)
 }
 
+section {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 /* Button styling */
 button {
     padding: 8px 14px;

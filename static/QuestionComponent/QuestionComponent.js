@@ -45,7 +45,7 @@ class QuestionComponent extends HTMLElement {
         // Add style
         const style = document.createElement('link');
         Object.assign(style, {
-            href: './QuestionComponent/QuestionComponent.css',
+            href: chrome.runtime.getURL('static/QuestionComponent/QuestionComponent.css'),
             rel: 'stylesheet'
         });
         this.shadowRoot.appendChild(style);
