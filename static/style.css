@@ -125,5 +125,5 @@ h1 {
 }
 
 .suggestion-item .follow-up-searches li::before {
-    content: "🔍 ";
+    content: "\1F50D  "; /* Unicode for magnifying glass */
 }
