@@ -15,7 +15,7 @@
             },
             "summary": {
                 "type": "string",
-                "description": "Summary of performance in this category.",
+                "description": "Summary of performance in this category, with relevant observations and feedback.",
                 "minLength": 30,
                 "maxLength": 500
             },
