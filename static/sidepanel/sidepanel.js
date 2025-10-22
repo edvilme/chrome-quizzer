@@ -115,8 +115,6 @@ async function populateData() {
   crosswordComponent.setAttribute('data-crossword-cols', crossword.cols || 10);
   elements.crossword.innerHTML = '';
   elements.crossword.appendChild(crosswordComponent);
-  // elements.crossword.innerHTML = crossword.table_string || 'No crossword available';
-  // console.log("Crossword received:", crossword);
 
   let quiz
   try {
