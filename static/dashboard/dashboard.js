@@ -1,14 +1,35 @@
+import { displayError, logError } from '../ErrorHandler.js';
+
 async function getAnswerHistory() {
     let dashboardSuggestions = [];
+    const suggestionsContainer = document.querySelector('#dashboard-suggestions');
+    
     try {
-        dashboardSuggestions = (await chrome.runtime.sendMessage({ type: 'generateSuggestions' })).suggestions;
+        const response = await chrome.runtime.sendMessage({ type: 'generateSuggestions' });
+        if (!response || !response.success) {
+            throw new Error(response?.error || 'Failed to fetch suggestions');
+        }
+        dashboardSuggestions = response.suggestions;
     } catch (err) {
-        console.error('Failed to fetch dashboard suggestions:', err);
+        logError('Dashboard Suggestions', err);
+        displayError(suggestionsContainer, err.message, getAnswerHistory);
         return;
     }
+    
     // Render dashboardSuggestions into the HTML
-    const suggestionsContainer = document.querySelector('#dashboard-suggestions');
     suggestionsContainer.innerHTML = ''; // Clear previous suggestions
+
+    if (!dashboardSuggestions || dashboardSuggestions.length === 0) {
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-state';
+        emptyState.innerHTML = `
+            <p style="text-align: center; color: var(--muted); padding: 48px 16px;">
+                No suggestions available yet. Take some quizzes to get personalized learning recommendations!
+            </p>
+        `;
+        suggestionsContainer.appendChild(emptyState);
+        return;
+    }
 
     dashboardSuggestions.forEach(suggestion => {
         const suggestionElement = document.createElement('section');
