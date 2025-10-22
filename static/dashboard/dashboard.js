@@ -1,62 +1,33 @@
 async function getAnswerHistory() {
-    const { answerHistory = [] } = await chrome.storage.local.get('answerHistory');
-    const container = document.querySelector('#answer-history');
-    container.innerHTML = '';
 
-    const dashboardSuggestions = await chrome.runtime.sendMessage({ type: 'generateSuggestions' });
+    const dashboardSuggestions = (await chrome.runtime.sendMessage({ type: 'generateSuggestions' })).suggestions;
 
-    console.log("Received suggestions:", dashboardSuggestions);
+    // Render dashboardSuggestions into the HTML
+    const suggestionsContainer = document.querySelector('#dashboard-suggestions');
+    suggestionsContainer.innerHTML = ''; // Clear previous suggestions
 
-    // Render raw JSON output
-    const pre = document.createElement('pre');
-    pre.textContent = JSON.stringify(dashboardSuggestions, null, 2);
-    container.appendChild(pre);
+    dashboardSuggestions.forEach(suggestion => {
+        const suggestionElement = document.createElement('section');
+        suggestionElement.classList.add('suggestion-item');
 
-    // Render human-readable summary
-    const summaryRoot = document.createElement('div');
-    summaryRoot.style.marginTop = '1rem';
-    summaryRoot.innerHTML = `<h3>Dashboard Suggestions Summary</h3>`;
+        suggestionElement.innerHTML = `
+            <h3>${suggestion.category} ${suggestion.category_emoji || ''}</h3>
+            <p><strong>Summary:</strong> ${suggestion.summary}</p>
+            <p><strong>Score:</strong> ${suggestion.score}</p>
+            <ul>
+                <strong>Suggestions for Improvement:</strong>
+                ${suggestion.suggestions.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+            <ul>
+                <strong>Relevant Follow-up Searches:</strong>
+                ${suggestion.relevant_followup_searches.map(search => 
+                    `<li>${search}</li>`
+                ).join('')}
+            </ul>
+        `;
 
-    if (dashboardSuggestions.summary) {
-        const p = document.createElement('p');
-        p.textContent = dashboardSuggestions.summary;
-        summaryRoot.appendChild(p);
-    }
-
-    const categories = dashboardSuggestions.categories || [];
-    const ul = document.createElement('ul');
-    categories.forEach(category => {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${escapeHtml(category.category)}</strong> - ${escapeHtml(category.summary)}`;
-
-        const suggestions = document.createElement('p');
-        suggestions.textContent = `Suggestions: ${category.suggestions}`;
-        li.appendChild(suggestions);
-
-        const followups = document.createElement('ul');
-        (category.relevant_followup_searches || []).forEach(search => {
-            const followupLi = document.createElement('li');
-            followupLi.textContent = search;
-            followups.appendChild(followupLi);
-        });
-        li.appendChild(followups);
-
-        ul.appendChild(li);
+        suggestionsContainer.appendChild(suggestionElement);
     });
-
-    summaryRoot.appendChild(ul);
-    container.appendChild(summaryRoot);
-}
-
-function escapeHtml(str) {
-    return str.replace(/[&<>'"`]/g, match => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        "'": '&#39;',
-        '"': '&quot;',
-        '`': '&#x60;'
-    }[match]));
 }
 
 getAnswerHistory();
