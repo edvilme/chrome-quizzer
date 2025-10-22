@@ -1,7 +1,11 @@
 async function getAnswerHistory() {
-
-    const dashboardSuggestions = (await chrome.runtime.sendMessage({ type: 'generateSuggestions' })).suggestions;
-
+    let dashboardSuggestions = [];
+    try {
+        dashboardSuggestions = (await chrome.runtime.sendMessage({ type: 'generateSuggestions' })).suggestions;
+    } catch (err) {
+        console.error('Failed to fetch dashboard suggestions:', err);
+        return;
+    }
     // Render dashboardSuggestions into the HTML
     const suggestionsContainer = document.querySelector('#dashboard-suggestions');
     suggestionsContainer.innerHTML = ''; // Clear previous suggestions
