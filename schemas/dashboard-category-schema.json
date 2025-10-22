@@ -9,6 +9,10 @@
                 "type": "string",
                 "description": "The name of the quiz category."
             },
+            "category_emoji": {
+                "type": "string",
+                "description": "An emoji representing the quiz category. Use standard Unicode emojis."
+            },
             "summary": {
                 "type": "string",
                 "description": "Summary of performance in this category.",
@@ -35,13 +39,6 @@
             "relevant_followup_searches": {
                 "type": "array",
                 "description": "List of relevant follow-up searches for further learning in this category.",
-                "items": {
-                    "type": "string"
-                }
-            },
-            "questions": {
-                "type": "array",
-                "description": "List of questions attempted in this category.",
                 "items": {
                     "type": "string"
                 }
