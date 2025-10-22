@@ -6,6 +6,12 @@
 import quizSchema from '../schemas/quiz-schema.json' assert { type: 'json' };
 import dashboardCategorySchema from '../schemas/dashboard-category-schema.json' assert { type: 'json' };
 
+const SUGGESTIONS_INITIAL_PROMPT = `
+You are an expert at generating helpful suggestions for users based on their previous answers to quizzes.
+Given their past answers, provide a concise list of personalized suggestions to help them improve their knowledge and skills.
+Address the user in second person ("you").
+`;
+
 /**
  * Generates a quiz from article text using the language model.
  * @param {Object} languageModel - The language model instance
@@ -27,16 +33,9 @@ async function generateQuiz(languageModel, articleText) {
 }
 
 async function generateSuggestions(languageModel, answers) {
-  const initialPrompt = `
-    I am an expert at generating helpful suggestions for you based on your previous answers to quizzes. 
-    Given your past answers, I will provide a concise list of personalized suggestions to help you improve
-    your knowledge and skills. I will only address you in second person ("you").
-    I will consider EVERY question without omission or repetition, and generate the appropriate categories as needed.
-  `;
-
   await languageModel.append({
     role: 'system',
-    content: initialPrompt
+    content: SUGGESTIONS_INITIAL_PROMPT
   });
   await languageModel.append(
     answers
