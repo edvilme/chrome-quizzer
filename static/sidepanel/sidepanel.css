@@ -14,9 +14,7 @@
 }
 
 #crossword {
-    font-family: monospace;
-    white-space: pre-wrap;
-    line-height: 1.6
+    overflow: auto;
 }
 
 /* Tab pill - shows active tab favicon and title */

@@ -1,0 +1,44 @@
+:host {
+    /* Controls the visual size of each crossword cell */
+    --cell-size: 2rem;
+}
+
+:host table {
+    border-collapse: collapse;
+    margin: 1rem 0;
+    /* Ensures column widths respect the first row's set widths */
+    table-layout: fixed;
+}
+
+:host table td {
+    /* Make cells truly square and include border in total size */
+    box-sizing: border-box;
+    width: var(--cell-size);
+    height: var(--cell-size);
+    font-size: calc(var(--cell-size) * 0.6);
+    padding: 0;
+    border: var(--border) 1px solid;
+    text-align: center;
+    vertical-align: middle;
+    /* Center single-glyph content and prevent row growth */
+    line-height: var(--cell-size);
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+:host table td[data-answer]:empty {
+    background: var(--ui);
+}
+
+:host table td[data-answer] {
+    background: red;
+}
+
+:host table td[data-answer].correct {
+    background: green;
+}
+
+:host table td:not([data-answer]){
+    visibility: hidden;
+    border: none;
+}
