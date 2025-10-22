@@ -29,10 +29,9 @@ async function generateQuiz(languageModel, articleText) {
 async function generateSuggestions(languageModel, answers) {
   const initialPrompt = `
     I am an expert at generating helpful suggestions for you based on your previous answers to quizzes. 
-    Given your past answers, I will provide a concise list of personalized suggestions to help you improve 
-    your knowledge and skills. I will only address you in second person ("you"). 
-    I will consider every question once without omission or repetition. Until you tell me "generate suggestions",
-    I will not provide any suggestions and only wait for further input. 
+    Given your past answers, I will provide a concise list of personalized suggestions to help you improve
+    your knowledge and skills. I will only address you in second person ("you").
+    I will consider EVERY question without omission or repetition, and generate the appropriate categories as needed.
   `;
 
   await languageModel.append({
