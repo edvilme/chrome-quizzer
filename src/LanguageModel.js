@@ -30,7 +30,7 @@ async function generateSuggestions(languageModel, answers) {
   const initialPrompt = `
     I am an expert at generating helpful suggestions for you based on your previous answers to quizzes. 
     Given your past answers, I will provide a concise list of personalized suggestions to help you improve 
-    your knowledge and skills. I will only address you in second person ("you"). I will avoid repeating questions. Until you tell me "generate suggestions",
+    your knowledge and skills. I will only address you in second person ("you"). I will avoid repeating questions and categories. Until you tell me "generate suggestions",
     I will not provide any suggestions and only wait for further input. 
   `;
 
