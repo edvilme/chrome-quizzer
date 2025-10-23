@@ -179,8 +179,11 @@ chrome.omnibox.onInputEntered.addListener(() => {
 });
 
 // Create an alarm to periodically refresh suggestions based on answer history
-chrome.alarms.clear('refreshSuggestions');
-chrome.alarms.create('refreshSuggestions', { periodInMinutes: 60 });
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.alarms.clear('refreshSuggestions');
+  chrome.alarms.create('refreshSuggestions', { periodInMinutes: 60 });
+});
+
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'refreshSuggestions') {
     console.log("Refreshing suggestions based on updated answer history.");
