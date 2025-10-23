@@ -12,6 +12,31 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 </p>
 <p align="center"><em>Side panel with quiz, crossword, and hangman features in light and dark mode</em></p>
 
+## 📸 Feature Screenshots
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="./assets/screenshot-quiz.png" alt="Interactive Quiz" width="350"/><br/>
+      <em>Interactive Quiz with Instant Feedback</em>
+    </td>
+    <td align="center">
+      <img src="./assets/screenshot-crossword.png" alt="Crossword Puzzle" width="350"/><br/>
+      <em>AI-Generated Crossword Puzzle</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./assets/screenshot-hangman.png" alt="Hangman Game" width="350"/><br/>
+      <em>Hangman Word Game</em>
+    </td>
+    <td align="center">
+      <img src="./assets/screenshot-dashboard.png" alt="Learning Dashboard" width="350"/><br/>
+      <em>Personalized Learning Dashboard</em>
+    </td>
+  </tr>
+</table>
+
 ## ✨ Features
 
 - **📖 Smart Article Extraction** - Automatically extracts main content from web pages using Mozilla's Readability library
