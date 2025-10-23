@@ -179,12 +179,11 @@ chrome.omnibox.onInputEntered.addListener(() => {
 });
 
 // Create an alarm to periodically refresh suggestions based on answer history
-chrome.alarms.create('refreshSuggestions', { periodInMinutes: 1 });
+chrome.alarms.create('refreshSuggestions', { periodInMinutes: 60 });
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'refreshSuggestions') {
     console.log("Refreshing suggestions based on updated answer history.");
     await preloadSuggestionsData();
-
     await chrome.notifications.create({
       type: 'basic',
       iconUrl: chrome.runtime.getURL('icons/quizzer_icon_128x128.png'),
