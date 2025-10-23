@@ -27,6 +27,7 @@ class HangmanComponent extends HTMLElement {
         this.addStylesheet();
 
         const word = this.getAttribute('data-word');
+        this.incorrectAttempts = 0;
 
         const wordContainer = document.createElement('div');
         wordContainer.classList.add('word-container');
