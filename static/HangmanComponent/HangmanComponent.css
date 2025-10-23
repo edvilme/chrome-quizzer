@@ -1,0 +1,43 @@
+:host {
+    display: block;
+    --cell-size: 2rem;
+}
+
+.word-container {
+    display: flex;
+    overflow: auto;
+    gap: 4px;
+}
+
+.word-container > div {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border-bottom: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1ch;
+    font-size: calc(var(--cell-size) * 0.6);
+}
+
+.alphabet-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.alphabet-container button {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    font-size: calc(var(--cell-size) * 0.6);
+    border: var(--border) 1px solid;
+}
+.alphabet-container button.incorrect {
+    background: red;
+    color: white;
+}
+.alphabet-container button.correct {
+    background: green;
+    color: white;
+}
