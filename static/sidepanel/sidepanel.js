@@ -7,7 +7,8 @@ const elements = {
   favicon: document.getElementById('tab-favicon'),
   title: document.getElementById('tab-title'),
   score: document.getElementById('score'),
-  crossword: document.getElementById('crossword')
+  crossword: document.getElementById('crossword'),
+  hangman: document.getElementById('hangman')
 };
 const answerHistoryMaxLength = 100;
 
@@ -73,6 +74,7 @@ async function populateData() {
   elements.title.textContent = "Loading...";
   elements.crossword.innerHTML = "";
   elements.score.textContent = "Score: 0";
+  elements.hangman.innerHTML = "";
 
   let tabDataResponse = await chrome.runtime.sendMessage({ type: 'getTab' });
   if (chrome.runtime.lastError || !tabDataResponse || !tabDataResponse.success) {
@@ -117,6 +119,16 @@ async function populateData() {
   crosswordComponent.setAttribute('data-crossword-cols', crossword.cols || 10);
   elements.crossword.innerHTML = '';
   elements.crossword.appendChild(crosswordComponent);
+
+  const hangmanWords = crossword.result?.map(entry => entry.answer) || [];
+  const randomWord = hangmanWords.length > 0
+    ? hangmanWords[Math.floor(Math.random() * hangmanWords.length)]
+    : '';
+
+  const hangmanElement = document.createElement('hangman-component');
+  hangmanElement.setAttribute('data-word', randomWord);
+  elements.hangman.innerHTML = '';
+  elements.hangman.appendChild(hangmanElement);
 
   let quiz
   try {
