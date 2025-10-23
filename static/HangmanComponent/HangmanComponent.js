@@ -34,7 +34,6 @@ class HangmanComponent extends HTMLElement {
             const normalizedChar = char.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
             const charCell = document.createElement('div');
             charCell.setAttribute('data-answer', normalizedChar.toUpperCase());
-            charCell.addEventListener('input', (e) => this.handleCellInput(charCell, e));
             wordContainer.appendChild(charCell);
         }
         this.shadowRoot.appendChild(wordContainer);

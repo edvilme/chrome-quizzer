@@ -117,7 +117,6 @@ async function populateData() {
   crosswordComponent.setAttribute('data-crossword', JSON.stringify(crossword.result || []));
   crosswordComponent.setAttribute('data-crossword-rows', crossword.rows || 10);
   crosswordComponent.setAttribute('data-crossword-cols', crossword.cols || 10);
-  elements.crossword.innerHTML = '';
   elements.crossword.appendChild(crosswordComponent);
 
   const hangmanWords = crossword.result?.map(entry => entry.answer) || [];
@@ -127,7 +126,6 @@ async function populateData() {
 
   const hangmanElement = document.createElement('hangman-component');
   hangmanElement.setAttribute('data-word', randomWord);
-  elements.hangman.innerHTML = '';
   elements.hangman.appendChild(hangmanElement);
 
   let quiz
