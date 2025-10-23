@@ -112,11 +112,16 @@ class CrosswordComponent extends HTMLElement {
     fillCrosswordData(crosswordData) {
         crosswordData
             .filter(({ startx, starty }) => startx !== undefined && starty !== undefined)
-            .forEach(({ answer, orientation, startx, starty, clue }) => {
+            .forEach(({ answer, orientation, startx, starty, clue, position }) => {
+                // Add data-clue-id to the initial cell of each word
+                const id = `${position}${orientation.charAt(0).toUpperCase()}`;
+                const initialCell = this.shadowRoot.querySelector('table')
+                    ?.querySelector(`tr:nth-child(${starty}) td:nth-child(${startx})`);
+                initialCell?.setAttribute('data-clue-id', id);
                 for (let i = 0; i < answer.length; i++) {
                     const x = orientation === 'across' ? startx + i : startx;
                     const y = orientation === 'across' ? starty : starty + i;
-                    this.updateCell(x, y, answer[i], clue);
+                    this.updateCell(x, y, clue, answer[i]);
                 }
             });
     }
@@ -125,10 +130,10 @@ class CrosswordComponent extends HTMLElement {
      * Updates a specific cell in the crossword grid.
      * @param {number} x - Column index of the cell.
      * @param {number} y - Row index of the cell.
+     * @param {string} clue - Clue associated with the word.
      * @param {string} answerChar - Correct answer character for the cell.
-     * @param {string} clue - Clue associated with the cell.
      */
-    updateCell(x, y, answerChar, clue) {
+    updateCell(x, y, clue, answerChar) {
         const table = this.shadowRoot.querySelector('table');
         const cell = table?.querySelector(`tr:nth-child(${y}) td:nth-child(${x})`);
         if (cell) {

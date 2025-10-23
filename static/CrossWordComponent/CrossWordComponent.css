@@ -5,8 +5,6 @@
 
 :host table {
     border-collapse: collapse;
-    margin: 1rem auto;
-    /* Ensures column widths respect the first row's set widths */
     table-layout: fixed;
 }
 
@@ -14,16 +12,32 @@
     /* Make cells truly square and include border in total size */
     box-sizing: border-box;
     width: var(--cell-size);
+    min-width: var(--cell-size);
     height: var(--cell-size);
     font-size: calc(var(--cell-size) * 0.6);
     padding: 0;
     border: var(--border) 1px solid;
     text-align: center;
     vertical-align: middle;
+    position: relative;
     /* Center single-glyph content and prevent row growth */
     line-height: var(--cell-size);
-    overflow: hidden;
     white-space: nowrap;
+}
+
+:host table td[data-clue-id]::before {
+    content: attr(data-clue-id);
+    font-size: calc(var(--cell-size) * 0.3);
+    color: var(--text-secondary);
+    position: absolute;
+    right: 100%;
+    bottom: 100%;
+    z-index: 1000;
+    line-height: 1.5ch;
+}
+:host table td[data-clue-id] {
+    border-top-width: 2px;
+    border-left-width: 2px;
 }
 
 :host table td[data-answer]:empty {

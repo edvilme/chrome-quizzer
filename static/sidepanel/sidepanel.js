@@ -71,6 +71,8 @@ async function populateData() {
   elements.quiz.innerHTML = "";
   elements.favicon.src = "";
   elements.title.textContent = "Loading...";
+  elements.crossword.innerHTML = "";
+  elements.score.textContent = "Score: 0";
 
   let tabDataResponse = await chrome.runtime.sendMessage({ type: 'getTab' });
   if (chrome.runtime.lastError || !tabDataResponse || !tabDataResponse.success) {
