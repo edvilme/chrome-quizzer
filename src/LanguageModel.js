@@ -10,8 +10,8 @@ import crosswordSchema from '../schemas/crossword-schema.json' assert { type: 'j
 import { generateLayout } from 'crossword-layout-generator';
 
 const SUGGESTIONS_INITIAL_PROMPT = `
-I am an expert at generating helpful learning suggestions based on quiz performance.
-When analyzing past answers, I will:
+You are an expert at generating helpful learning suggestions based on quiz performance.
+When analyzing past answers, you will:
 1. Only reference topics and categories that appear in the provided quiz data
 2. Generate concise, personalized suggestions to improve knowledge gaps
 3. Base all recommendations solely on the information in the user's quiz history

@@ -179,17 +179,22 @@ chrome.omnibox.onInputEntered.addListener(() => {
 });
 
 // Create an alarm to periodically refresh suggestions based on answer history
+chrome.alarms.clear('refreshSuggestions');
 chrome.alarms.create('refreshSuggestions', { periodInMinutes: 60 });
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'refreshSuggestions') {
     console.log("Refreshing suggestions based on updated answer history.");
     await preloadSuggestionsData();
-    await chrome.notifications.create({
-      type: 'basic',
-      iconUrl: chrome.runtime.getURL('icons/quizzer_icon_128x128.png'),
-      title: 'Quizzer Suggestions Updated',
-      message: 'Your quiz suggestions have been refreshed based on your latest answers.'
-    });
+    try {
+      await chrome.notifications.create({
+        type: 'basic',
+        iconUrl: chrome.runtime.getURL('icons/quizzer_icon_128x128.png'),
+        title: 'Quizzer Suggestions Updated',
+        message: 'Your quiz suggestions have been refreshed based on your latest answers.'
+      });
+    } catch (err) {
+      console.error("Failed to create notification:", err);
+    }
   }
 });
 
