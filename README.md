@@ -7,10 +7,10 @@
 A Chrome extension that automatically generates comprehension quizzes from any article using on-device AI. No internet required for AI processing—everything runs locally in your browser!
 
 <p align="center">
-  <img src="./assets/screenshot.png" alt="Chrome Quizzer Light Mode" width="400"/>
-  <img src="./assets/screenshot-dark.png" alt="Chrome Quizzer Dark Mode" width="400"/>
+  <img src="./assets/screenshot.png" alt="Chrome Quizzer Side Panel - Light Mode" width="400"/>
+  <img src="./assets/screenshot-dark.png" alt="Chrome Quizzer Side Panel - Dark Mode" width="400"/>
 </p>
-<p align="center"><em>Light and Dark mode support</em></p>
+<p align="center"><em>Side panel with quiz, crossword, and hangman features in light and dark mode</em></p>
 
 ## ✨ Features
 
