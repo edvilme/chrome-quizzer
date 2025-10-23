@@ -193,7 +193,9 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
         type: 'basic',
         iconUrl: chrome.runtime.getURL('icons/quizzer_icon_128x128.png'),
         title: 'Quizzer Suggestions Updated',
-        message: 'Your quiz suggestions have been refreshed based on your latest answers.'
+        message: 'Your quiz suggestions have been refreshed based on your latest answers.',
+        requireInteraction: false,
+        silent: true
       });
     } catch (err) {
       console.error("Failed to create notification:", err);
