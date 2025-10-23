@@ -39,6 +39,11 @@ class HangmanComponent extends HTMLElement {
         }
         this.shadowRoot.appendChild(wordContainer);
 
+        const progressBar = document.createElement('progress');
+        progressBar.max = HangmanComponent.maxAttempts;
+        progressBar.value = this.incorrectAttempts;
+        this.shadowRoot.appendChild(progressBar);
+
         const alphabetContainer = document.createElement('div');
         alphabetContainer.classList.add('alphabet-container');
         for (let i = 65; i <= 90; i++) {
@@ -70,6 +75,8 @@ class HangmanComponent extends HTMLElement {
             // Handle incorrect guess (e.g., decrement attempts, update hangman drawing)
             button.classList.add('incorrect');
             this.incorrectAttempts++;
+            const progressBar = this.shadowRoot.querySelector('progress');
+            progressBar.value = this.incorrectAttempts;
             if (this.incorrectAttempts >= HangmanComponent.maxAttempts) {
                 this.disableAllLetters();
             }
