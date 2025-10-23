@@ -15,7 +15,8 @@
     "unlimitedStorage",
     "omnibox",
     "notifications",
-    "search"
+    "search",
+    "alarms"
   ],
   "omnibox": {
     "keyword": "quizzer"

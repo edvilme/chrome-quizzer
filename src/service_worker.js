@@ -105,11 +105,10 @@ async function preloadSuggestionsData(callback = () => {}) {
   }
   const answers = (await chrome.storage.local.get('answerHistory')).answerHistory || [];
 
-  // TODO: Stop any activity from language model before generating suggestions
-
   let followupSuggestions;
   try {
     followupSuggestions = await generateSuggestions(languageModel, answers);
+    console.log("Generated follow-up suggestions:", followupSuggestions);
     // Cache the generated suggestions
     await chrome.storage.local.set({ followupSuggestions });
     callback({ success: true, suggestions: followupSuggestions });
@@ -179,11 +178,19 @@ chrome.omnibox.onInputEntered.addListener(() => {
   chrome.tabs.create({ url: dashboardUrl });
 });
 
-// Listen for changes in chrome storage to clear cached suggestions
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && changes.answerHistory) {
-    console.log("Answer history changed, preloading new suggestions.");
-    preloadSuggestionsData();
+// Create an alarm to periodically refresh suggestions based on answer history
+chrome.alarms.create('refreshSuggestions', { periodInMinutes: 1 });
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === 'refreshSuggestions') {
+    console.log("Refreshing suggestions based on updated answer history.");
+    await preloadSuggestionsData();
+
+    await chrome.notifications.create({
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('icons/quizzer_icon_128x128.png'),
+      title: 'Quizzer Suggestions Updated',
+      message: 'Your quiz suggestions have been refreshed based on your latest answers.'
+    });
   }
 });
 
