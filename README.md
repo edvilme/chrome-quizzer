@@ -7,19 +7,52 @@
 A Chrome extension that automatically generates comprehension quizzes from any article using on-device AI. No internet required for AI processing—everything runs locally in your browser!
 
 <p align="center">
-  <img src="./assets/screenshot.png" alt="Chrome Quizzer Light Mode" width="400"/>
-  <img src="./assets/screenshot-dark.png" alt="Chrome Quizzer Dark Mode" width="400"/>
+  <img src="./assets/screenshot.png" alt="Chrome Quizzer Side Panel - Light Mode" width="400"/>
+  <img src="./assets/screenshot-dark.png" alt="Chrome Quizzer Side Panel - Dark Mode" width="400"/>
 </p>
-<p align="center"><em>Light and Dark mode support</em></p>
+<p align="center"><em>Side panel with quiz, crossword, and hangman features in light and dark mode</em></p>
+
+## 📸 Feature Screenshots
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="./assets/screenshot-quiz.png" alt="Interactive Quiz" width="350"/><br/>
+      <em>Interactive Quiz with Instant Feedback</em>
+    </td>
+    <td align="center">
+      <img src="./assets/screenshot-crossword.png" alt="Crossword Puzzle" width="350"/><br/>
+      <em>AI-Generated Crossword Puzzle</em>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./assets/screenshot-hangman.png" alt="Hangman Game" width="350"/><br/>
+      <em>Hangman Word Game</em>
+    </td>
+    <td align="center">
+      <img src="./assets/screenshot-dashboard.png" alt="Learning Dashboard" width="350"/><br/>
+      <em>Personalized Learning Dashboard</em>
+    </td>
+  </tr>
+</table>
 
 ## ✨ Features
 
 - **📖 Smart Article Extraction** - Automatically extracts main content from web pages using Mozilla's Readability library
 - **🤖 On-Device AI** - Leverages Chrome's built-in AI APIs (no external API keys or internet required for AI)
   - AI Summarizer for concise article summaries
-  - Language Model for quiz generation
+  - Language Model for quiz generation, crossword puzzles, and personalized suggestions
 - **📝 Interactive Quizzes** - Generates 20 multiple-choice questions based on article content
 - **✅ Instant Feedback** - Click answers to see if you're correct with visual feedback
+- **🧩 Crossword Puzzles** - AI-generated crossword puzzles from article content with interactive grid interface
+- **🎯 Hangman Game** - Word-guessing game using vocabulary from the article's crossword
+- **📊 Learning Dashboard** - Personalized learning suggestions based on your quiz performance
+  - Tracks answer history to identify knowledge gaps
+  - Generates follow-up search suggestions
+  - Provides category-specific recommendations
+- **🔍 Omnibox Integration** - Quick access to dashboard by typing "quizzer" in the address bar
+- **🔔 Smart Notifications** - Periodic updates with refreshed learning suggestions
 - **🌓 Dark Mode Support** - Automatic theme switching based on system preferences
 - **🎨 Modern UI** - Clean, GitHub-inspired design with smooth animations
 - **🔒 Privacy-First** - All AI processing happens on your device
@@ -61,14 +94,31 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 
 ## 🎯 Usage
 
+### Side Panel Features
+
 1. **Navigate to any article** on the web (blog posts, news articles, documentation, etc.)
 2. **Click the Chrome Quizzer icon** in your toolbar to open the side panel
 3. **Wait for processing** - The extension will:
    - Extract the article content
    - Generate a summary
    - Create 20 quiz questions
+   - Generate a crossword puzzle
+   - Create a hangman game
 4. **Take the quiz** - Click on answers to test your comprehension
 5. **Get instant feedback** - Correct answers turn green, incorrect ones turn red
+6. **Play crossword** - Fill in the interactive crossword puzzle based on article content
+7. **Play hangman** - Guess letters to reveal words from the article
+
+### Learning Dashboard
+
+1. **Access the dashboard** by:
+   - Clicking "Open Dashboard" button in the side panel, or
+   - Typing `quizzer` in Chrome's address bar (omnibox) and pressing Enter
+2. **View personalized suggestions** based on your quiz performance
+3. **Click follow-up searches** to explore topics where you need improvement
+4. **Track your progress** across different knowledge categories
+
+Your quiz answers are tracked locally to provide personalized learning suggestions. The extension periodically refreshes suggestions and sends notifications with updates.
 
 ## 🛠️ Development
 
@@ -78,12 +128,22 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 chrome-quizzer/
 ├── assets/           # Extension icons and screenshots
 ├── schemas/          # JSON schemas for AI responses
+│   ├── quiz-schema.json
+│   ├── crossword-schema.json
+│   ├── dashboard-category-schema.json
+│   └── answer-schema.json
 ├── src/              # Source code
-│   └── service_worker.js  # Background script (AI processing)
-├── static/           # Side panel UI
-│   ├── sidepanel.html
-│   ├── sidepanel.js
-│   └── sidepanel.css
+│   ├── service_worker.js      # Background script (AI processing)
+│   ├── LanguageModel.js       # Quiz, crossword, and suggestion generation
+│   ├── Summarizer.js          # Article summarization
+│   ├── TabExtractor.js        # Content extraction
+│   └── ModelAcquisition.js    # AI model management
+├── static/           # UI components
+│   ├── sidepanel/             # Side panel UI
+│   ├── dashboard/             # Learning dashboard
+│   ├── QuestionComponent/     # Quiz question component
+│   ├── CrossWordComponent/    # Crossword puzzle component
+│   └── HangmanComponent/      # Hangman game component
 ├── manifest.json     # Extension configuration
 └── package.json      # Dependencies
 ```
@@ -103,10 +163,11 @@ This bundles the service worker with esbuild, including all dependencies.
 
 ## 🔧 Technologies Used
 
-- **Chrome Extension APIs**: Manifest V3, Side Panel API, Scripting API
+- **Chrome Extension APIs**: Manifest V3, Side Panel API, Scripting API, Omnibox API, Notifications API, Storage API, Search API
 - **Chrome AI APIs**: Built-in Language Model and Summarizer
 - **Mozilla Readability**: Article content extraction
 - **linkedom**: Server-side DOM parsing
+- **crossword-layout-generator**: Crossword puzzle layout generation
 - **esbuild**: Fast bundling
 
 ## 📄 License
