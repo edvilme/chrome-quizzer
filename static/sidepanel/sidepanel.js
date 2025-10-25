@@ -61,6 +61,96 @@ function renderQuestion(question, quiz) {
   return questionElement;
 }
 
+// Function to handle tab data
+async function handleTabData() {
+  try {
+    let tabDataResponse = await chrome.runtime.sendMessage({ type: 'getTab' });
+    if (chrome.runtime.lastError || !tabDataResponse || !tabDataResponse.success) {
+      document.body.setAttribute('data-status', 'error');
+    }
+    const tabData = tabDataResponse.tabData;
+    elements.favicon.src = tabData.favicon || 'default_favicon.png';
+    elements.title.textContent = tabData.title || 'No title available';
+    console.log("Tab data received:", tabData);
+  } catch (error) {
+    console.error("Error fetching tab data:", error);
+    document.body.setAttribute('data-status', 'error');
+    return;
+  }
+}
+
+// Function to handle summary generation
+async function handleSummary(tabData) {
+  try {
+    let summaryResponse = await chrome.runtime.sendMessage({ type: 'generateSummary', tabData });
+    const summary = summaryResponse.summary;
+    if (chrome.runtime.lastError || !summaryResponse || !summaryResponse.success) {
+      throw new Error(summaryResponse.error);
+    }
+    elements.summary.textContent = summary || 'No summary available';
+    console.log("Summary received:", summary);
+  } catch (error) {
+    console.error("Error generating summary:", error);
+    document.body.setAttribute('data-status', 'error');
+  }
+}
+
+// Function to handle crossword and hangman generation
+async function handleCrossword(tabData) {
+  try {
+    let crosswordResponse = await chrome.runtime.sendMessage({ type: 'generateCrossword', tabData });
+    console.log("Crossword response:", crosswordResponse);
+    const crossword = crosswordResponse.crosswordLayout;
+    if (chrome.runtime.lastError || !crosswordResponse || !crosswordResponse.success) {
+      throw new Error(crosswordResponse?.error || 'Unknown error');
+    }
+    const crosswordComponent = document.createElement('cross-word-component');
+    crosswordComponent.setAttribute('data-crossword', JSON.stringify(crossword.result || []));
+    crosswordComponent.setAttribute('data-crossword-rows', crossword.rows || 10);
+    crosswordComponent.setAttribute('data-crossword-cols', crossword.cols || 10);
+    elements.crossword.innerHTML = '';
+    elements.crossword.appendChild(crosswordComponent);
+
+    const hangmanWords = crossword?.result?.map(entry => entry.answer) || [];
+    const randomWord = hangmanWords.length > 0
+      ? hangmanWords[Math.floor(Math.random() * hangmanWords.length)]
+      : '';
+
+    const hangmanElement = document.createElement('hangman-component');
+    hangmanElement.setAttribute('data-word', randomWord);
+    elements.hangman.innerHTML = '';
+    elements.hangman.appendChild(hangmanElement);
+
+  } catch (error) {
+    console.error("Error generating crossword:", error);
+    document.body.setAttribute('data-status', 'error');
+  }
+}
+
+// Function to handle quiz generation
+async function handleQuiz(tabData) {
+  try {
+    let quizResponse = await chrome.runtime.sendMessage({ type: 'generateQuiz', tabData });
+    const quiz = quizResponse.quiz;
+    if (chrome.runtime.lastError || !quizResponse || !quizResponse.success) {
+      throw new Error(quizResponse.error);
+    }
+    console.log("Quiz received:", quiz);
+    if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+      elements.quiz.textContent = 'No quiz available';
+      return;
+    }
+    elements.quiz.innerHTML = '';
+    quiz.questions.forEach((question) => {
+      const questionElement = renderQuestion(question, quiz);
+      elements.quiz.appendChild(questionElement);
+    });
+  } catch (error) {
+    console.error("Error generating quiz:", error);
+    document.body.setAttribute('data-status', 'error');
+  }
+}
+
 /**
  * Pulls tab information, generates summary and quiz content, and updates the panel.
  * @returns {Promise<void>}
@@ -76,85 +166,11 @@ async function populateData() {
   elements.score.textContent = "Score: 0";
   elements.hangman.innerHTML = "";
 
-  let tabDataResponse = await chrome.runtime.sendMessage({ type: 'getTab' });
-  if (chrome.runtime.lastError || !tabDataResponse || !tabDataResponse.success) {
-    document.body.setAttribute('data-status', 'error');
-  }
-  let tabData = tabDataResponse.tabData;
-  elements.favicon.src = tabData.favicon || 'default_favicon.png';
-  elements.title.textContent = tabData.title || 'No title available';
-  console.log("Tab data received:", tabData);
-
-  let summary
-  try {
-    let summaryResponse = await chrome.runtime.sendMessage({ type: 'generateSummary', tabData });
-    summary = summaryResponse.summary
-    if (chrome.runtime.lastError || !summaryResponse || !summaryResponse.success) {
-      throw new Error(summaryResponse.error)
-    }
-  } catch (error) {
-    console.error("Error generating summary:", error);
-    document.body.setAttribute('data-status', 'error');
-    return;
-  }
-  elements.summary.textContent = summary || 'No summary available';
-  console.log("Summary received:", summary);
-
-  let crossword
-  try {
-    let crosswordResponse = await chrome.runtime.sendMessage({ type: 'generateCrossword', tabData });
-    console.log("Crossword response:", crosswordResponse);
-    crossword = crosswordResponse.crosswordLayout;
-    if (chrome.runtime.lastError || !crosswordResponse || !crosswordResponse.success) {
-      throw new Error(crosswordResponse?.error || 'Unknown error');
-    }
-  } catch (error) {
-    console.error("Error generating crossword:", error);
-    document.body.setAttribute('data-status', 'error');
-    return;
-  }
-  const crosswordComponent = document.createElement('cross-word-component');
-  crosswordComponent.setAttribute('data-crossword', JSON.stringify(crossword.result || []));
-  crosswordComponent.setAttribute('data-crossword-rows', crossword.rows || 10);
-  crosswordComponent.setAttribute('data-crossword-cols', crossword.cols || 10);
-  elements.crossword.appendChild(crosswordComponent);
-
-  const hangmanWords = crossword.result?.map(entry => entry.answer) || [];
-  const randomWord = hangmanWords.length > 0
-    ? hangmanWords[Math.floor(Math.random() * hangmanWords.length)]
-    : '';
-
-  const hangmanElement = document.createElement('hangman-component');
-  hangmanElement.setAttribute('data-word', randomWord);
-  elements.hangman.appendChild(hangmanElement);
-
-  let quiz
-  try {
-    let quizResponse = await chrome.runtime.sendMessage({ type: 'generateQuiz', tabData });
-    quiz = quizResponse.quiz;
-    if (chrome.runtime.lastError || !quizResponse || !quizResponse.success) {
-      throw new Error(quizResponse.error);
-    }
-  } catch (error) {
-    console.error("Error generating quiz:", error);
-    document.body.setAttribute('data-status', 'error');
-    return;
-  }
-  console.log("Quiz received:", quiz);
-
-  if (!quiz || !quiz.questions || quiz.questions.length === 0) {
-    elements.quiz.textContent = 'No quiz available';
-    return;
-  }
-  elements.quiz.innerHTML = '';
-  quiz.questions.forEach((question) => {
-    const questionElement = renderQuestion(question, quiz);
-    elements.quiz.appendChild(questionElement);
-  });
-
-  
+  await handleTabData(tabData);
+  await handleSummary(tabData);
+  await handleCrossword(tabData);
+  await handleQuiz(tabData);
 }
-
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', populateData);

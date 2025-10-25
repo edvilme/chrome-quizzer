@@ -6,6 +6,13 @@
 import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import { DOMParser } from "linkedom";
 
+class TabExtractionError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "TabExtractionError";
+  }
+}
+
 /**
  * Extracts all relevant data from the current active tab.
  * Gets the current tab, validates it's a webpage (not browser internal pages),
@@ -20,7 +27,7 @@ async function extractTabData() {
   
   // Validate tab exists and has valid URL
   if (!tab || !tab.url || !tab.title) {
-    throw new Error('No sender tab');
+    throw new TabExtractionError('No valid active tab found');
   }
   
   // Check if it's a browser internal page - send error if not a webpage
@@ -35,7 +42,7 @@ async function extractTabData() {
   ];
   
   if (internalPagePrefixes.some(prefix => tab.url.startsWith(prefix))) {
-    throw new Error('Page not readerable');
+    throw new TabExtractionError('Page not readerable');
   }
   
   // Extract the DOM from the tab
@@ -54,7 +61,7 @@ async function extractTabData() {
   
   // If we couldn't extract content (non-HTML document), throw error
   if (!domContent) {
-    throw new Error('Page not readerable');
+    throw new TabExtractionError('Page not readerable');
   }
   
   // Parse the DOM
@@ -62,7 +69,7 @@ async function extractTabData() {
   
   // Check if page is readerable
   if (!isProbablyReaderable(dom)) {
-    throw new Error('Page not readerable');
+    throw new TabExtractionError('Page not readerable');
   }
   
   const favicon = tab.favIconUrl || null;
