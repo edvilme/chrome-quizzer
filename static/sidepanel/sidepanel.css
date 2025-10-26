@@ -19,7 +19,7 @@ body[data-status="error"][data-error="quiz-error"] {
     --error-message: "Failed to generate quiz. Please try again.";
     --error-message-subtitle: "Article content may be too long or complex.";
 }
-body[data-status="error"][data-error="models-error"] {
+body[data-status="error"][data-error="model-loading-error"] {
     --error-message: "Failed to load AI models.";
     --error-message-subtitle: "Please make sure that experimental AI features are enabled in your browser settings.";
 }
