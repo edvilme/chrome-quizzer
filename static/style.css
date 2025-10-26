@@ -8,6 +8,8 @@
     --pill: #f1f5f9;
     --accent: color-mix(in srgb, var(--ui), #0055ff 80%);
     --text-secondary: #6a737d;
+    --green-pill: color-mix(in srgb, #34c759 75%, var(--pill));
+    --red-pill: color-mix(in srgb, #ff383c 75%, var(--pill));
 }
 
 /* Dark theme colors */
