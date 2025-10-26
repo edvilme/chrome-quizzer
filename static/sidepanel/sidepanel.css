@@ -4,8 +4,8 @@ body[data-status="error"] {
     --error-message-subtitle: "";
 }
 body[data-status="error"][data-error="tab-data-error"] {
-    --error-message: "Failed to fetch tab data. Please try again or use a different tab.";
-    --error-message-subtitle: "If the issue persists, consider restarting the browser.";
+    --error-message: "Failed to fetch tab data";
+    --error-message-subtitle: "Please try again or use a different tab.";
 }
 body[data-status="error"][data-error="summary-error"] {
     --error-message: "Failed to generate summary. Please try again.";
@@ -29,8 +29,13 @@ body[data-status="error"] > *:not(#error-message) {
 body[data-status="error"] #error-message {
     display: block;
 }
-body[data-status="error"] #error-message::before {
+body[data-status="error"] #error-message #error-message-title::before {
     content: "⚠️ " var(--error-message);
+    display: block;
+}
+
+body[data-status="error"] #error-message #error-message-subtitle::before {
+    content: var(--error-message-subtitle);
     display: block;
 }
 
