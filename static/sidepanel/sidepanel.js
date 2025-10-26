@@ -123,7 +123,6 @@ async function handleCrossword(tabData) {
 
     const hangmanElement = document.createElement('hangman-component');
     hangmanElement.setAttribute('data-word', randomWord);
-    elements.hangman.innerHTML = '';
     elements.hangman.appendChild(hangmanElement);
 
   } catch (error) {
