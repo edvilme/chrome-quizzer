@@ -183,7 +183,11 @@ async function populateData() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', populateData);
-elements.btn.addEventListener('click', populateData);
+elements.btn.addEventListener('click', () => {
+  if (confirm('Generate a new quiz? This will replace the current content.')) {
+    populateData();
+  }
+});
 
 if (elements.openDashboardBtn) {
   elements.openDashboardBtn.addEventListener('click', () => {

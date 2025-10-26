@@ -6,6 +6,7 @@
 :host table {
     border-collapse: collapse;
     table-layout: fixed;
+    margin: 2ch;
 }
 
 :host table td {
