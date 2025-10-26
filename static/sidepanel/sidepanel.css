@@ -1,3 +1,45 @@
+/* Error message styling and display */
+body[data-status="error"] {
+    --error-message: attr(data-error);
+}
+body[data-status="error"][data-error="tab-data-error"] {
+    --error-message: "Failed to fetch tab data. Please try again or use a different tab.";
+}
+body[data-status="error"][data-error="summary-error"] {
+    --error-message: "Failed to generate summary. Please try again.";
+}
+body[data-status="error"][data-error="crossword-error"] {
+    --error-message: "Failed to generate crossword. Please try again.";
+}
+body[data-status="error"][data-error="quiz-error"] {
+    --error-message: "Failed to generate quiz. Please try again.";
+}
+body[data-status="error"][data-error="models-error"] {
+    --error-message: "Failed to load AI models.";
+}
+body[data-status="error"] > *:not(#error-message) {
+    display: none !important;
+}
+body[data-status="error"] #error-message {
+    display: block;
+}
+body[data-status="error"] #error-message::before {
+    content: "⚠️ " var(--error-message);
+    display: block;
+}
+
+/* END Error message styling and display */
+
+#error-message {
+    display: none;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--pill) 50%, red);
+    color: white;
+    font-weight: 600;
+}
+
 #loading {
     fill: var(--muted);
     width: 25vmin;
