@@ -179,7 +179,7 @@ hr:has(+ #quiz:empty) {
 
 /* Make Generate Quiz button more prominent */
 #get-article {
-    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #6366f1));
+    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, var(--ui)));
     color: white;
     font-weight: 600;
     font-size: 15px;
@@ -192,7 +192,7 @@ hr:has(+ #quiz:empty) {
 #get-article:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 35%, transparent);
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 110%, white), color-mix(in srgb, var(--accent) 80%, #6366f1));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 90%, white), color-mix(in srgb, var(--accent) 80%, var(--ui)));
 }
 
 #get-article:active {
