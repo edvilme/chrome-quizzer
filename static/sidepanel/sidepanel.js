@@ -89,7 +89,7 @@ async function handleSummary(tabData) {
     let summaryResponse = await chrome.runtime.sendMessage({ type: 'generateSummary', tabData });
     const summary = summaryResponse.summary;
     if (chrome.runtime.lastError || !summaryResponse || !summaryResponse.success) {
-      throw new Error(summaryResponse.errorType, summaryResponse);
+      throw new Error(summaryResponse.errorType);
     }
     elements.summary.textContent = summary || 'No summary available';
     console.log("Summary received:", summary);
@@ -107,7 +107,7 @@ async function handleCrossword(tabData) {
     console.log("Crossword response:", crosswordResponse);
     const crossword = crosswordResponse.crosswordLayout;
     if (chrome.runtime.lastError || !crosswordResponse || !crosswordResponse.success) {
-      throw new Error(crosswordResponse.errorType, crosswordResponse);
+      throw new Error(crosswordResponse.errorType);
     }
     const crosswordComponent = document.createElement('cross-word-component');
     crosswordComponent.setAttribute('data-crossword', JSON.stringify(crossword.result || []));
@@ -139,7 +139,7 @@ async function handleQuiz(tabData) {
     let quizResponse = await chrome.runtime.sendMessage({ type: 'generateQuiz', tabData });
     const quiz = quizResponse.quiz;
     if (chrome.runtime.lastError || !quizResponse || !quizResponse.success) {
-      throw new Error(quizResponse.errorType, quizResponse);
+      throw new Error(quizResponse.errorType);
     }
     console.log("Quiz received:", quiz);
     if (!quiz || !quiz.questions || quiz.questions.length === 0) {

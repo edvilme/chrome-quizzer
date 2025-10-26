@@ -1,21 +1,27 @@
 /* Error message styling and display */
 body[data-status="error"] {
     --error-message: attr(data-error);
+    --error-message-subtitle: "";
 }
 body[data-status="error"][data-error="tab-data-error"] {
     --error-message: "Failed to fetch tab data. Please try again or use a different tab.";
+    --error-message-subtitle: "If the issue persists, consider restarting the browser.";
 }
 body[data-status="error"][data-error="summary-error"] {
     --error-message: "Failed to generate summary. Please try again.";
+    --error-message-subtitle: "Article content may be too long or complex.";
 }
 body[data-status="error"][data-error="crossword-error"] {
     --error-message: "Failed to generate crossword. Please try again.";
+    --error-message-subtitle: "Article content may be insufficient for crossword creation, or there may be an issue with the crossword generation service.";
 }
 body[data-status="error"][data-error="quiz-error"] {
     --error-message: "Failed to generate quiz. Please try again.";
+    --error-message-subtitle: "Article content may be too long or complex.";
 }
 body[data-status="error"][data-error="models-error"] {
     --error-message: "Failed to load AI models.";
+    --error-message-subtitle: "Please make sure that experimental AI features are enabled in your browser settings.";
 }
 body[data-status="error"] > *:not(#error-message) {
     display: none !important;
