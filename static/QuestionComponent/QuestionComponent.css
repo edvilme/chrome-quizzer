@@ -20,14 +20,10 @@
 
 :host li.correct {
     background: var(--green-pill);
-    border-color: #0f6d16;
-    color: #0f6d16;
     font-weight: 600;
 }
 :host li.incorrect {
     background: var(--red-pill);
-    border-color: #d32f2f;
-    color: #d32f2f;
     font-weight: 600;
 }
 
