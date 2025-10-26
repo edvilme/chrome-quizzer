@@ -23,7 +23,7 @@ async function getTabData(message, sender, sendResponse) {
     sendResponse({ success: true, tabData });
     return tabData;
   } catch (err) {
-    sendResponse({ success: false, error: err.message });
+    sendResponse({ success: false, error: err.message, errorType: 'tab-data-error' });
     return null;
   }
 }
@@ -46,7 +46,7 @@ async function generateSummary(tabData, message, sender, sendResponse) {
       format: "markdown"
     }, 'summarizer');
   } catch (err) {
-    sendResponse({ success: false, error: 'Failed to load summarization model' });
+    sendResponse({ success: false, error: 'Failed to load summarization model', errorType: 'model-loading-error' });
     return;
   }
 
@@ -56,7 +56,7 @@ async function generateSummary(tabData, message, sender, sendResponse) {
     sendResponse({ success: true, summary });
     return summary;
   } catch (err) {
-    sendResponse({ success: false, error: 'Failed to generate summary' });
+    sendResponse({ success: false, error: 'Failed to generate summary', errorType: 'summary-error' });
     return;
   }
 }
@@ -75,7 +75,7 @@ async function generateQuizData(tabData, message, sender, sendResponse) {
   try {
     languageModel = await acquireModel(LanguageModel, {}, 'quiz-generator');
   } catch (err) {
-    sendResponse({ success: false, error: 'Failed to load language model' });
+    sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
     return;
   }
 
@@ -85,7 +85,7 @@ async function generateQuizData(tabData, message, sender, sendResponse) {
     sendResponse({ success: true, quiz });
     return quiz;
   } catch (err) {
-    sendResponse({ success: false, error: 'Failed to generate quiz' });
+    sendResponse({ success: false, error: 'Failed to generate quiz', errorType: 'quiz-error' });
     return;
   }
 }
@@ -100,7 +100,7 @@ async function preloadSuggestionsData(callback = () => {}) {
   try {
     languageModel = await acquireModel(LanguageModel, {}, 'suggestion-generator');
   } catch (err) {
-    callback({ success: false, error: 'Failed to load language model' });
+    callback({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
     return;
   }
   const answers = (await chrome.storage.local.get('answerHistory')).answerHistory || [];
@@ -114,7 +114,7 @@ async function preloadSuggestionsData(callback = () => {}) {
     callback({ success: true, suggestions: followupSuggestions });
     return followupSuggestions;
   } catch (err) {
-    callback({ success: false, error: 'Failed to generate suggestions', err });
+    callback({ success: false, error: 'Failed to generate suggestions', errorType: 'suggestions-error' });
     return;
   }
 }
@@ -133,7 +133,7 @@ async function generateCrosswordData(tabData, message, sender, sendResponse) {
   try {
     languageModel = await acquireModel(LanguageModel, {}, 'crossword-generator');
   } catch (err) {
-    sendResponse({ success: false, error: 'Failed to load language model' });
+    sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
     return;
   }
   let crosswordLayout;
@@ -142,7 +142,7 @@ async function generateCrosswordData(tabData, message, sender, sendResponse) {
     sendResponse({ success: true, crosswordLayout });
     return crosswordLayout;
   } catch (err) {
-    sendResponse({ success: false, error: 'Failed to generate crossword', err });
+    sendResponse({ success: false, error: 'Failed to generate crossword', errorType: 'crossword-error' });
     return;
   }
 }

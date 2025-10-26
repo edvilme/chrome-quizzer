@@ -1,3 +1,56 @@
+/* Error message styling and display */
+body[data-status="error"] {
+    --error-message: attr(data-error);
+    --error-message-subtitle: "";
+}
+body[data-status="error"][data-error="tab-data-error"] {
+    --error-message: "Failed to fetch tab data";
+    --error-message-subtitle: "Please try again or use a different tab.";
+}
+body[data-status="error"][data-error="summary-error"] {
+    --error-message: "Failed to generate summary. Please try again.";
+    --error-message-subtitle: "Article content may be too long or complex.";
+}
+body[data-status="error"][data-error="crossword-error"] {
+    --error-message: "Failed to generate crossword. Please try again.";
+    --error-message-subtitle: "Article content may be insufficient for crossword creation, or there may be an issue with the crossword generation service.";
+}
+body[data-status="error"][data-error="quiz-error"] {
+    --error-message: "Failed to generate quiz. Please try again.";
+    --error-message-subtitle: "Article content may be too long or complex.";
+}
+body[data-status="error"][data-error="model-loading-error"] {
+    --error-message: "Failed to load AI models.";
+    --error-message-subtitle: "Please make sure that experimental AI features are enabled in your browser settings.";
+}
+body[data-status="error"] > *:not(#error-message) {
+    display: none !important;
+}
+body[data-status="error"] #error-message {
+    display: block;
+}
+body[data-status="error"] #error-message #error-message-title::before {
+    content: "⚠️ " var(--error-message);
+    display: block;
+}
+
+body[data-status="error"] #error-message #error-message-subtitle::before {
+    content: var(--error-message-subtitle);
+    display: block;
+}
+
+/* END Error message styling and display */
+
+#error-message {
+    display: none;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--pill) 50%, red);
+    color: white;
+    font-weight: 600;
+}
+
 #loading {
     fill: var(--muted);
     width: 25vmin;

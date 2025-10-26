@@ -3,7 +3,17 @@
  * Handles logic to acquire AI models and check their availability.
  */
 
+/**
+ * Cache for acquired models to avoid redundant downloads.
+ */
 const modelsCache = {}
+
+class ModelAcquisitionError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ModelAcquisitionError";
+  }
+}
 
 /**
  * Acquires a model (LanguageModel or Summarizer) from the Chrome AI API.
@@ -22,8 +32,8 @@ async function acquireModel(ModelClass, options = {}, name = ModelClass.name) {
   if (modelAvailability !== "downloadable" && 
       modelAvailability !== "downloading" && 
       modelAvailability !== "available") {
-    console.error(`${ModelClass} not available:`, modelAvailability);
-    return null;
+    // Throw error
+    throw new ModelAcquisitionError(`${ModelClass} not available: ${modelAvailability}`);
   }
 
   // Create the model with download progress monitoring
