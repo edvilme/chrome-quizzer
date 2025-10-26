@@ -19,13 +19,13 @@
 }
 
 :host li.correct {
-    background: color-mix(in srgb, #0f6d16 20%, var(--pill));
+    background: var(--green-pill);
     border-color: #0f6d16;
     color: #0f6d16;
     font-weight: 600;
 }
 :host li.incorrect {
-    background: color-mix(in srgb, #d32f2f 20%, var(--pill));
+    background: var(--red-pill);
     border-color: #d32f2f;
     color: #d32f2f;
     font-weight: 600;

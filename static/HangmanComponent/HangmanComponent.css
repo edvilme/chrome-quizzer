@@ -34,10 +34,10 @@
     border: var(--border) 1px solid;
 }
 .alphabet-container button.incorrect {
-    background: red;
+    background: var(--red-pill);
     color: white;
 }
 .alphabet-container button.correct {
-    background: green;
+    background: var(--green-pill);
     color: white;
 }

@@ -46,11 +46,11 @@
 }
 
 :host table td[data-answer]:not(:empty) {
-    background: red;
+    background: var(--red-pill);
 }
 
 :host table td[data-answer]:not(:empty).correct {
-    background: green;
+    background: var(--green-pill);
 }
 
 :host table td:not([data-answer]){

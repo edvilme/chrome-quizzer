@@ -51,11 +51,20 @@ body[data-status="error"] #error-message #error-message-subtitle::before {
     font-weight: 600;
 }
 
-#loading {
-    fill: var(--muted);
-    width: 25vmin;
-    height: 25vmin;
-    margin: auto;
+/* Make Generate Quiz button more prominent */
+#get-article {
+    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, var(--ui)));
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 25%, transparent);
+    border: none;
+    transition: all .2s ease;
+}
+
+#get-article:hover {
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 35%, transparent);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 90%, white), color-mix(in srgb, var(--accent) 80%, var(--ui)));
 }
 
 /* Content areas */
@@ -177,39 +186,13 @@ hr:has(+ #quiz:empty) {
     display: none;
 }
 
-/* Make Generate Quiz button more prominent */
-#get-article {
-    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, var(--ui)));
-    color: white;
-    font-weight: 600;
-    font-size: 15px;
-    padding: 12px 20px;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 25%, transparent);
-    border: none;
-    transition: all .2s ease;
-}
 
-#get-article:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 35%, transparent);
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 90%, white), color-mix(in srgb, var(--accent) 80%, var(--ui)));
-}
-
-#get-article:active {
-    transform: translateY(0);
-}
 
 /* Make score section more prominent */
 #score {
-    font-size: 20px;
+    font-size: 5em;
     font-weight: 700;
-    padding: 16px 24px;
-    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 60%, transparent));
-    border: 2px solid color-mix(in srgb, var(--accent) 40%, var(--border));
-    border-radius: 12px;
-    text-align: center;
-    margin: 20px 0;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 15%, transparent);
-    color: var(--text);
-    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, var(--accent), var(--ui));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
