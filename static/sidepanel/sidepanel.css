@@ -190,7 +190,7 @@ hr:has(+ #quiz:empty) {
 
 /* Make score section more prominent */
 #score {
-    font-size: 5em;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
     font-weight: 700;
     background: linear-gradient(135deg, var(--accent), var(--ui));
     -webkit-background-clip: text;
