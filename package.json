@@ -17,6 +17,7 @@
     "esbuild": "^0.25.10"
   },
   "scripts": {
-    "build": "esbuild src/service_worker.js --bundle --minify --sourcemap --outdir=dist"
+    "build": "esbuild src/service_worker.js --bundle --minify --sourcemap --outdir=dist && npm run zip",
+    "zip": "zip -r chrome-quizzer-$npm_package_version.zip . -x \"node_modules/*\" \"src/*\" \"*.zip\" \".git/*\""
   }
 }
