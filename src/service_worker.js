@@ -5,7 +5,7 @@
  * between the extension's components and the Chrome browser.
  */
 
-import { generateQuiz, generateSuggestions, generateCrossword } from "./LanguageModel.js";
+import { generateQuiz, generateSuggestions, generateWordGames } from "./LanguageModel.js";
 import { summarizeText } from "./Summarizer.js";
 import { extractTabData } from "./TabExtractor.js";
 import { acquireModel } from "./ModelAcquisition.js";
@@ -139,7 +139,7 @@ async function generateCrosswordData(tabData, message, sender, sendResponse) {
   }
   let crosswordLayout;
   try {
-    crosswordLayout = await generateCrossword(languageModel, article.textContent);
+    crosswordLayout = await generateWordGames(languageModel, article.textContent);
     sendResponse({ success: true, crosswordLayout });
     return crosswordLayout;
   } catch (err) {

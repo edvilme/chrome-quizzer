@@ -22,14 +22,15 @@
           "explanation": {
             "type": "string"
           },
-          "furtherReadingURLs": {
+          "furtherReadingSearchTerms": {
             "type": "array",
+            "description": "List of search terms for further reading on this question's topic.",
             "items": {
               "type": "string"
             }
           }
         },
-        "required": ["title", "options", "answer", "explanation"]
+        "required": ["title", "options", "answer", "explanation", "furtherReadingSearchTerms"]
       }
     },
     "quizUuid": {
