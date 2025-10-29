@@ -117,7 +117,7 @@ body[data-status="error"] #error-message #error-message-subtitle::before {
     font-size: 12px;
     font-weight: 500;
     color: var(--muted);
-    white-space: nowrap
+    white-space: nowrap;
 }
 #tab-language::before {
     content: "🌐 ";
