@@ -40,9 +40,12 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 ## ✨ Features
 
 - **📖 Smart Article Extraction** - Automatically extracts main content from web pages using Mozilla's Readability library
+- **🌐 Automatic Language Detection & Translation** - Detects article language and translates non-English content to English for consistent AI processing
 - **🤖 On-Device AI** - Leverages Chrome's built-in AI APIs (no external API keys or internet required for AI)
   - AI Summarizer for concise article summaries
   - Language Model for quiz generation, crossword puzzles, and personalized suggestions
+  - Language Detector for identifying article language
+  - Translator for automatic translation to English
 - **📝 Interactive Quizzes** - Generates 20 multiple-choice questions based on article content
 - **✅ Instant Feedback** - Click answers to see if you're correct with visual feedback
 - **🧩 Crossword Puzzles** - AI-generated crossword puzzles from article content with interactive grid interface
@@ -96,10 +99,12 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 
 ### Side Panel Features
 
-1. **Navigate to any article** on the web (blog posts, news articles, documentation, etc.)
+1. **Navigate to any article** on the web (blog posts, news articles, documentation, etc.) in any language
 2. **Click the Chrome Quizzer icon** in your toolbar to open the side panel
 3. **Wait for processing** - The extension will:
    - Extract the article content
+   - Detect the article's language (displayed in the UI)
+   - Automatically translate non-English content to English
    - Generate a summary
    - Create 20 quiz questions
    - Generate a crossword puzzle
@@ -137,6 +142,7 @@ chrome-quizzer/
 │   ├── LanguageModel.js       # Quiz, crossword, and suggestion generation
 │   ├── Summarizer.js          # Article summarization
 │   ├── TabExtractor.js        # Content extraction
+│   ├── LanguageDetector.js    # Language detection
 │   └── ModelAcquisition.js    # AI model management
 ├── static/           # UI components
 │   ├── sidepanel/             # Side panel UI
@@ -164,7 +170,7 @@ This bundles the service worker with esbuild, including all dependencies.
 ## 🔧 Technologies Used
 
 - **Chrome Extension APIs**: Manifest V3, Side Panel API, Scripting API, Omnibox API, Notifications API, Storage API, Search API
-- **Chrome AI APIs**: Built-in Language Model and Summarizer
+- **Chrome AI APIs**: Built-in Language Model, Summarizer, Language Detector, and Translator
 - **Mozilla Readability**: Article content extraction
 - **linkedom**: Server-side DOM parsing
 - **crossword-layout-generator**: Crossword puzzle layout generation
@@ -184,3 +190,4 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 - Requires Chrome's experimental AI features to be enabled
 - AI models need to be downloaded on first use (may take a few minutes)
 - Quiz quality depends on article content and AI model capabilities
+- Non-English articles are automatically translated to English, which may affect nuance and context in quiz generation
