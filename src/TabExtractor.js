@@ -3,8 +3,11 @@
  * Handles logic for extracting data from the active browser tab.
  */
 
+
 import { Readability, isProbablyReaderable } from "@mozilla/readability";
 import { DOMParser } from "linkedom";
+import { acquireModel } from "./ModelAcquisition";
+import { detectLanguage } from "./LanguageDetector";
 
 class TabExtractionError extends Error {
   constructor(message) {
@@ -76,12 +79,37 @@ async function extractTabData() {
   
   // Extract article content
   const article = new Readability(dom).parse();
+
+  // Detect language
+  const languageDetector = await acquireModel(LanguageDetector, {}, 'language-detector');
+  const detectedLanguage = await detectLanguage(languageDetector, article?.textContent || tab.title);
+  console.log('Detected language:', detectedLanguage);
+
+  // Translate to English if not already
+  if (detectedLanguage !== 'en') {
+    const translator = await acquireModel(Translator, {
+      sourceLanguage: detectedLanguage,
+      targetLanguage: 'en'
+    }, `translator-${detectedLanguage}-en`);
+    if (article?.textContent) {
+      article.textContent = await translator.translate(article.textContent);
+    }
+    if (article?.title) {
+      article.title = await translator.translate(article.title);
+    }
+    if (tab.title) {
+      tab.title = await translator.translate(tab.title);
+    }
+  }
+
+  // Return the extracted data
   
   return {
     title: tab.title,
     domContent,
     favicon,
-    article
+    article,
+    language: detectedLanguage
   };
 }
 
