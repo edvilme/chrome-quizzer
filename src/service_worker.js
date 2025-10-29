@@ -23,6 +23,7 @@ async function getTabData(message, sender, sendResponse) {
     sendResponse({ success: true, tabData });
     return tabData;
   } catch (err) {
+    console.error('Error extracting tab data:', err);
     sendResponse({ success: false, error: err.message, errorType: 'tab-data-error' });
     return null;
   }

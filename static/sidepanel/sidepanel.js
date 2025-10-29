@@ -6,6 +6,7 @@ const elements = {
   quiz: document.getElementById('quiz'),
   favicon: document.getElementById('tab-favicon'),
   title: document.getElementById('tab-title'),
+  language: document.getElementById('tab-language'),
   score: document.getElementById('score'),
   crossword: document.getElementById('crossword'),
   hangman: document.getElementById('hangman')
@@ -65,6 +66,7 @@ function renderQuestion(question, quiz) {
 async function handleTabData() {
   elements.title.textContent = "Loading...";
   elements.favicon.src = "";
+  elements.language.textContent = "";
   try {
     let tabDataResponse = await chrome.runtime.sendMessage({ type: 'getTab' });
     if (chrome.runtime.lastError || !tabDataResponse || !tabDataResponse.success) {
@@ -73,6 +75,7 @@ async function handleTabData() {
     const tabData = tabDataResponse.tabData;
     elements.favicon.src = tabData.favicon || 'default_favicon.png';
     elements.title.textContent = tabData.title || 'No title available';
+    elements.language.textContent = tabData.language || '';
     console.log("Tab data received:", tabData);
     return tabData;
   } catch (error) {

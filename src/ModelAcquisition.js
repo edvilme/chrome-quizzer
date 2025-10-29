@@ -26,9 +26,10 @@ async function acquireModel(ModelClass, options = {}, name = ModelClass.name) {
   // Check in cache
   if (modelsCache[name]) return modelsCache[name]
 
-  // Check model availability
-  const modelAvailability = await ModelClass.availability();
-  
+  const modelAvailability = ModelClass == Translator 
+    ? await ModelClass.availability({ targetLanguage: options.targetLanguage, sourceLanguage: options.sourceLanguage })
+    : await ModelClass.availability();
+
   if (modelAvailability !== "downloadable" && 
       modelAvailability !== "downloading" && 
       modelAvailability !== "available") {

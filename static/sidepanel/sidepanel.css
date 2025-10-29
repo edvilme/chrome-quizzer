@@ -113,6 +113,18 @@ body[data-status="error"] #error-message #error-message-subtitle::before {
     white-space: nowrap
 }
 
+#tab-language {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+}
+#tab-language::before {
+    content: "🌐 ";
+    margin-right: 4px;
+}
+
+
 
 #languages {
     display: flex;

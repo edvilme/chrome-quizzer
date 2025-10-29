@@ -6,8 +6,8 @@
 async function detectLanguage(languageDetector, text) {
     const response = await languageDetector.detect(text);
     return response
-        .sort((a, b) => b.probability - a.probability)[0]
-        ?.language;
+        .sort((a, b) => b.confidence - a.confidence)[0]
+        ?.detectedLanguage;
 }
 
 export { detectLanguage };
