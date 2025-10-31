@@ -179,9 +179,11 @@ async function populateData() {
   if (!tabData) {
     return;
   }
-  await handleSummary(tabData);
-  await handleCrossword(tabData);
-  await handleQuiz(tabData);
+  await Promise.all([
+    handleSummary(tabData),
+    handleCrossword(tabData),
+    handleQuiz(tabData)
+  ]);
 }
 
 // Event listeners

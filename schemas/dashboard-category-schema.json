@@ -2,6 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Dashboard Summary Array",
     "type": "array",
+    "description": "An array of suggestions and summaries for different quiz categories based on provided answer data.",
     "items": {
         "type": "object",
         "properties": {
@@ -15,13 +16,13 @@
             },
             "summary": {
                 "type": "string",
-                "description": "Summary of performance in this category, with relevant observations and feedback.",
+                "description": "Summary of performance in this category, with relevant observations, feedback and references to the provided answers.",
                 "minLength": 30,
                 "maxLength": 500
             },
             "suggestions": {
                 "type": "array",
-                "description": "Suggestions for improvement in this category.",
+                "description": "Suggestions for improvement in this category based on the provided quiz data.",
                 "minItems": 1,
                 "maxItems": 5,
                 "items": {

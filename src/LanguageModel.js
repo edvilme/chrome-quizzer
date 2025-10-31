@@ -5,7 +5,7 @@
 
 import quizSchema from '../schemas/quiz-schema.json' assert { type: 'json' };
 import dashboardCategorySchema from '../schemas/dashboard-category-schema.json' assert { type: 'json' };
-import crosswordSchema from '../schemas/crossword-schema.json' assert { type: 'json' };
+import wordGameSchema from '../schemas/word-game-schema.json' assert { type: 'json' };
 
 import { generateLayout } from 'crossword-layout-generator';
 
@@ -16,6 +16,8 @@ When analyzing past answers, you will:
 2. Generate concise, personalized suggestions to improve knowledge gaps
 3. Base all recommendations solely on the information in the user's quiz history
 4. Address the user in second person (you/your) throughout
+
+Consider all of the past answers I provide to you, and generate suggestions accordingly.
 `;
 
 /**
@@ -61,17 +63,12 @@ async function generateSuggestions(languageModel, answers) {
       .map(({correctAnswer, question, selectedAnswer, isCorrect}) => {
         return {
           role: 'user',
-          content: `
-          Consider this past answer I gave in a quiz:
-          \`\`\`json
-            ${JSON.stringify({correctAnswer, question, selectedAnswer, isCorrect})}
-          \`\`\`
-          `
+          content: JSON.stringify({correctAnswer, question, selectedAnswer, isCorrect})
         };
       })
   );
 
-  const response = await session.prompt("Generate suggestions.", {
+  const response = await session.prompt("Generate suggestions based on the provided quiz data.", {
     responseConstraint: dashboardCategorySchema
   });
   await session.destroy();
@@ -82,19 +79,20 @@ async function generateSuggestions(languageModel, answers) {
  * Generates a crossword puzzle layout from article text using the language model.
  * @param {Object} languageModel - The language model instance
  * @param {string} articleText - The article content to generate crossword from
- * @returns {Promise<Object>} The generated crossword layout
+ * @returns {Promise<Object>} The generated word game layout
  * @throws {Error} If crossword generation or parsing fails
  */
-async function generateCrossword(languageModel, articleText) {
+async function generateWordGames(languageModel, articleText) {
   // Clone the language model to avoid interfering with other tasks
   const session = await languageModel.clone();
   const promptText = `
-    Give me some words and their hints based off this article to create a crossword puzzle.
+    Give me some words and their hints based off this article to create a crossword puzzle. 
+    Hints should be concise and informative, and the words should be relevant to the article's content.
     ${articleText}
   `;
 
   const response = await session.prompt(promptText, {
-    responseConstraint: crosswordSchema
+    responseConstraint: wordGameSchema
   });
 
   await session.destroy();
@@ -105,4 +103,4 @@ async function generateCrossword(languageModel, articleText) {
 }
 
 
-export { generateQuiz, generateSuggestions, generateCrossword };
+export { generateQuiz, generateSuggestions, generateWordGames };

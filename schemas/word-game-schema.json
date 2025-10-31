@@ -1,17 +1,17 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Crossword Puzzle Schema",
+    "title": "Word Game Schema",
     "type": "array",
     "items": {
         "type": "object",
         "properties": {
             "clue": {
                 "type": "string",
-                "description": "The clue for the crossword entry."
+                "description": "Clue that describes the word. Can be a definition, synonym, hint, or sentence to complete."
             },
             "answer": {
                 "type": "string",
-                "description": "The answer to the crossword clue. Preferably a single word."
+                "description": "The answer to the clue. Preferably a single word without spaces or special characters."
             }
         },
         "required": ["clue", "answer"]
