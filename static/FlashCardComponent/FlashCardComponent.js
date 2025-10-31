@@ -28,7 +28,16 @@ class FlashCardComponent extends HTMLElement {
 
         const cardContainer = document.createElement('div');
         cardContainer.classList.add('flashcard-container');
-        cardContainer.setAttribute('data-random-rotation', (Math.random() * 10 - 5) + 'deg'); // Random rotation between -5 and +5 degrees
+        cardContainer.style.setProperty('--random-rotation', (Math.random() * 16 - 8) + 'deg'); // Random rotation between -8 and +8 degrees
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.innerText = '×';
+        deleteBtn.title = 'Delete Flashcard';
+        deleteBtn.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('deleted', { bubbles: true, composed: true }));
+        });
+        cardContainer.appendChild(deleteBtn);
 
         const titleElem = document.createElement('h3');
         titleElem.textContent = title;

@@ -198,6 +198,12 @@ async function populateFlashcards() {
     flashcardElement.setAttribute('data-content', content);
     flashcardElement.setAttribute('data-text-extract', textExtract);
     elements.flashcards.appendChild(flashcardElement);
+
+    flashcardElement.addEventListener('deleted', async () => {
+      const updatedFlashcards = flashcards.filter(fc => !(fc.title === title && fc.content === content && fc.textExtract === textExtract));
+      await chrome.storage.local.set({ flashcards: updatedFlashcards });
+      elements.flashcards.removeChild(flashcardElement);
+    });
   }
 }
 
