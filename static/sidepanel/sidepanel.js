@@ -192,6 +192,12 @@ async function populateData() {
 async function populateFlashcards() {
   const { flashcards = [] } = await chrome.storage.local.get('flashcards');
   elements.flashcards.innerHTML = '';
+  if (flashcards.length === 0) {
+    const noFlashcardsMsg = document.createElement('p');
+    noFlashcardsMsg.textContent = 'No flashcards available. To create flash cards, select some text, right-click, and choose "Create Flashcard".';
+    elements.flashcards.appendChild(noFlashcardsMsg);
+    return;
+  }
   for (const {title, content, textExtract} of flashcards) {
     const flashcardElement = document.createElement('flashcard-component');
     flashcardElement.setAttribute('data-title', title);

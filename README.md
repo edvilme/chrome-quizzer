@@ -50,6 +50,9 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 - **✅ Instant Feedback** - Click answers to see if you're correct with visual feedback
 - **🧩 Crossword Puzzles** - AI-generated crossword puzzles from article content with interactive grid interface
 - **🎯 Hangman Game** - Word-guessing game using vocabulary from the article's crossword
+- **🃏 Flashcards** - Create flashcards from selected text for focused study
+  - Right-click selected text and choose "Create Flashcard"
+  - View and manage flashcards in the side panel
 - **📊 Learning Dashboard** - Personalized learning suggestions based on your quiz performance
   - Tracks answer history to identify knowledge gaps
   - Generates follow-up search suggestions
