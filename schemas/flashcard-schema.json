@@ -2,10 +2,11 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Flashcard",
     "type": "object",
+    "description": "A schema representing a flashcard used for studying. Flashcards are used to help users memorize information by presenting a question or prompt on one side and the answer or explanation on the other side.",
     "properties": {
         "title": {
             "type": "string",
-            "description": "The title of the flashcard."
+            "description": "The title/prompt/question of the flashcard."
         },
         "content": {
             "type": "string",
