@@ -79,7 +79,7 @@ async function generateSuggestions(languageModel, answers) {
  * Generates a crossword puzzle layout from article text using the language model.
  * @param {Object} languageModel - The language model instance
  * @param {string} articleText - The article content to generate crossword from
- * @returns {Promise<Object>} The generated crossword layout
+ * @returns {Promise<Object>} The generated word game layout
  * @throws {Error} If crossword generation or parsing fails
  */
 async function generateWordGames(languageModel, articleText) {
