@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chrome Quizzer",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Reader view and instant comprehension quizzes generated locally with Chrome's on-device LLM.",
   "action": {
     "default_title": "Click to open Quizzer",
@@ -16,7 +16,8 @@
     "omnibox",
     "notifications",
     "search",
-    "alarms"
+    "alarms",
+    "contextMenus"
   ],
   "omnibox": {
     "keyword": "quizzer"

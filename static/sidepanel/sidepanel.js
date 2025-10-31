@@ -9,7 +9,8 @@ const elements = {
   language: document.getElementById('tab-language'),
   score: document.getElementById('score'),
   crossword: document.getElementById('crossword'),
-  hangman: document.getElementById('hangman')
+  hangman: document.getElementById('hangman'), 
+  flashcards: document.getElementById('flashcards')
 };
 const answerHistoryMaxLength = 100;
 
@@ -175,6 +176,8 @@ async function populateData() {
   elements.score.textContent = "Score: 0";
   elements.hangman.innerHTML = "";
 
+  await populateFlashcards();
+
   const tabData = await handleTabData();
   if (!tabData) {
     return;
@@ -186,11 +189,48 @@ async function populateData() {
   ]);
 }
 
+async function deleteFlashCard({title, content, textExtract}) {
+  const { flashcards = [] } = await chrome.storage.local.get('flashcards');
+  const updatedFlashcards = flashcards.filter(fc => fc.title !== title || fc.content !== content || fc.textExtract !== textExtract);
+  await chrome.storage.local.set({ flashcards: updatedFlashcards });
+}
+
+async function populateFlashcards() {
+  const { flashcards = [] } = await chrome.storage.local.get('flashcards');
+  elements.flashcards.innerHTML = '';
+  if (flashcards.length === 0) {
+    const noFlashcardsMsg = document.createElement('p');
+    noFlashcardsMsg.textContent = 'No flashcards available. To create flashcards, select some text, right-click, and choose "Create Flashcard".';
+    elements.flashcards.appendChild(noFlashcardsMsg);
+    return;
+  }
+  for (const {title, content, textExtract} of flashcards) {
+    const flashcardElement = document.createElement('flashcard-component');
+    flashcardElement.setAttribute('data-title', title);
+    flashcardElement.setAttribute('data-content', content);
+    flashcardElement.setAttribute('data-text-extract', textExtract);
+    elements.flashcards.appendChild(flashcardElement);
+
+    flashcardElement.addEventListener('deleted', async () => {
+      elements.flashcards.removeChild(flashcardElement);
+      await deleteFlashCard({ title, content, textExtract });
+    });
+  }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', populateData);
 elements.btn.addEventListener('click', () => {
   if (confirm('Generate a new quiz? This will replace the current content.')) {
     populateData();
+  }
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local') {
+    if (changes.flashcards) {
+      populateFlashcards();
+    }
   }
 });
 

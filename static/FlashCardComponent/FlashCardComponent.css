@@ -1,0 +1,34 @@
+:host .flashcard-container {
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin: 8px 0;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transform: rotate(var(--random-rotation));
+}
+
+:host .flashcard-container:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.02) rotate(0deg);
+    z-index: 9999;
+}
+
+
+:host blockquote {
+    margin: 0;
+    padding-left: 16px;
+    border-left: 4px solid var(--text-secondary);
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+:host .delete-btn {
+    background: var(--ui);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
