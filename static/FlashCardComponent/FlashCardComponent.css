@@ -1,3 +1,6 @@
+:host {
+    display: block;
+}
 :host .flashcard-container {
     border: 1px solid #ccc;
     padding: 16px;
@@ -6,6 +9,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
     transform: rotate(var(--random-rotation));
+    color: black;
 }
 
 :host .flashcard-container:hover {

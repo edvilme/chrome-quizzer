@@ -159,9 +159,14 @@ hr:has(+ #quiz:empty) {
 }
 
 /* Flashcard styling */
+#flashcards > * {
+    max-width: 400px;
+    width: 100%;
+    margin: 0px auto;
+}
 #flashcards:hover > * {
     opacity: 0.5;
-    transform: scale(0.8);
+    transform: scale(0.95);
     transition: all 0.3s ease;
 }
 #flashcards > *:hover {
