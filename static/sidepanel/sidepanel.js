@@ -9,7 +9,8 @@ const elements = {
   language: document.getElementById('tab-language'),
   score: document.getElementById('score'),
   crossword: document.getElementById('crossword'),
-  hangman: document.getElementById('hangman')
+  hangman: document.getElementById('hangman'), 
+  flashcards: document.getElementById('flashcards')
 };
 const answerHistoryMaxLength = 100;
 
@@ -175,6 +176,8 @@ async function populateData() {
   elements.score.textContent = "Score: 0";
   elements.hangman.innerHTML = "";
 
+  await populateFlashcards();
+
   const tabData = await handleTabData();
   if (!tabData) {
     return;
@@ -186,11 +189,31 @@ async function populateData() {
   ]);
 }
 
+async function populateFlashcards() {
+  const { flashcards = [] } = await chrome.storage.local.get('flashcards');
+  elements.flashcards.innerHTML = '';
+  for (const {title, content, textExtract} of flashcards) {
+    const flashcardElement = document.createElement('flashcard-component');
+    flashcardElement.setAttribute('data-title', title);
+    flashcardElement.setAttribute('data-content', content);
+    flashcardElement.setAttribute('data-text-extract', textExtract);
+    elements.flashcards.appendChild(flashcardElement);
+  }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', populateData);
 elements.btn.addEventListener('click', () => {
   if (confirm('Generate a new quiz? This will replace the current content.')) {
     populateData();
+  }
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local') {
+    if (changes.flashcards) {
+      populateFlashcards();
+    }
   }
 });
 

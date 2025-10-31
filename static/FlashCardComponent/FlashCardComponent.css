@@ -1,0 +1,17 @@
+:host .flashcard-container {
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin: 8px 0;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    transform: rotate(attr(data-random-rotation));
+}
+
+:host blockquote {
+    margin: 0;
+    padding-left: 16px;
+    border-left: 4px solid var(--text-secondary);
+    color: var(--text-secondary);
+    font-style: italic;
+}
