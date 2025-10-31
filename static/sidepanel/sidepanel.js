@@ -200,7 +200,7 @@ async function populateFlashcards() {
   elements.flashcards.innerHTML = '';
   if (flashcards.length === 0) {
     const noFlashcardsMsg = document.createElement('p');
-    noFlashcardsMsg.textContent = 'No flashcards available. To create flash cards, select some text, right-click, and choose "Create Flashcard".';
+    noFlashcardsMsg.textContent = 'No flashcards available. To create flashcards, select some text, right-click, and choose "Create Flashcard".';
     elements.flashcards.appendChild(noFlashcardsMsg);
     return;
   }
