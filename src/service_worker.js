@@ -183,7 +183,7 @@ chrome.runtime.onInstalled.addListener(() => {
   // Create an alarm to periodically refresh suggestions based on answer history
   chrome.alarms.clear('refreshSuggestions');
   chrome.alarms.create('refreshSuggestions', { periodInMinutes: 60 });
-  // Add context menu item to open the dashboard
+  // Add context menu item to create flashcard
   chrome.contextMenus.create({
     id: 'add-flashcard',
     title: 'Quizzer: Add Flashcard',
