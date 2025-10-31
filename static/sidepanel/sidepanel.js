@@ -189,6 +189,12 @@ async function populateData() {
   ]);
 }
 
+async function deleteFlashCard({title, content, textExtract}) {
+  const { flashcards = [] } = await chrome.storage.local.get('flashcards');
+  const updatedFlashcards = flashcards.filter(fc => fc.title !== title || fc.content !== content || fc.textExtract !== textExtract);
+  await chrome.storage.local.set({ flashcards: updatedFlashcards });
+}
+
 async function populateFlashcards() {
   const { flashcards = [] } = await chrome.storage.local.get('flashcards');
   elements.flashcards.innerHTML = '';
@@ -206,9 +212,8 @@ async function populateFlashcards() {
     elements.flashcards.appendChild(flashcardElement);
 
     flashcardElement.addEventListener('deleted', async () => {
-      const updatedFlashcards = flashcards.filter(fc => !(fc.title === title && fc.content === content && fc.textExtract === textExtract));
-      await chrome.storage.local.set({ flashcards: updatedFlashcards });
       elements.flashcards.removeChild(flashcardElement);
+      await deleteFlashCard({ title, content, textExtract });
     });
   }
 }
