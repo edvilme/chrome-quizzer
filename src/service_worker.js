@@ -188,6 +188,7 @@ chrome.runtime.onInstalled.addListener(() => {
     id: 'add-flashcard',
     title: 'Quizzer: Add Flashcard',
     contexts: ['selection'],
+    documentUrlPatterns: ['http://*/*', 'https://*/*'],
   });
 });
 
