@@ -35,6 +35,12 @@ A Chrome extension that automatically generates comprehension quizzes from any a
       <em>Personalized Learning Dashboard</em>
     </td>
   </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="https://github.com/user-attachments/assets/eb74ebff-7377-4f14-aaff-91e11e8bb579" alt="Flashcards Feature" width="700"/><br/>
+      <em>Create Flashcards from Selected Text with AI-Generated Summaries</em>
+    </td>
+  </tr>
 </table>
 
 ## ✨ Features
@@ -43,13 +49,18 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 - **🌐 Automatic Language Detection & Translation** - Detects article language and translates non-English content to English for consistent AI processing
 - **🤖 On-Device AI** - Leverages Chrome's built-in AI APIs (no external API keys or internet required for AI)
   - AI Summarizer for concise article summaries
-  - Language Model for quiz generation, crossword puzzles, and personalized suggestions
+  - Language Model for quiz generation, crossword puzzles, flashcards, and personalized suggestions
   - Language Detector for identifying article language
   - Translator for automatic translation to English
 - **📝 Interactive Quizzes** - Generates 20 multiple-choice questions based on article content
 - **✅ Instant Feedback** - Click answers to see if you're correct with visual feedback
 - **🧩 Crossword Puzzles** - AI-generated crossword puzzles from article content with interactive grid interface
 - **🎯 Hangman Game** - Word-guessing game using vocabulary from the article's crossword
+- **🃏 Flashcards** - Create AI-powered flashcards from any selected text on web pages
+  - Right-click selected text and choose "Quizzer: Add Flashcard"
+  - AI generates title, summary, and preserves the original text extract
+  - Cards displayed in side panel with delete option
+  - Syncs automatically across the extension
 - **📊 Learning Dashboard** - Personalized learning suggestions based on your quiz performance
   - Tracks answer history to identify knowledge gaps
   - Generates follow-up search suggestions
@@ -114,6 +125,18 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 6. **Play crossword** - Fill in the interactive crossword puzzle based on article content
 7. **Play hangman** - Guess letters to reveal words from the article
 
+### Creating Flashcards
+
+1. **Select any text** on a webpage that you want to remember
+2. **Right-click** the selected text
+3. **Choose "Quizzer: Add Flashcard"** from the context menu
+4. **Wait for AI processing** - The extension will generate a flashcard with:
+   - An AI-generated title
+   - A concise summary of the content
+   - The original selected text as a quote
+5. **View your flashcards** in the side panel at the top
+6. **Delete flashcards** by clicking the × button on any card
+
 ### Learning Dashboard
 
 1. **Access the dashboard** by:
@@ -139,7 +162,7 @@ chrome-quizzer/
 │   └── answer-schema.json
 ├── src/              # Source code
 │   ├── service_worker.js      # Background script (AI processing)
-│   ├── LanguageModel.js       # Quiz, crossword, and suggestion generation
+│   ├── LanguageModel.js       # Quiz, crossword, flashcard, and suggestion generation
 │   ├── Summarizer.js          # Article summarization
 │   ├── TabExtractor.js        # Content extraction
 │   ├── LanguageDetector.js    # Language detection
@@ -149,7 +172,8 @@ chrome-quizzer/
 │   ├── dashboard/             # Learning dashboard
 │   ├── QuestionComponent/     # Quiz question component
 │   ├── CrossWordComponent/    # Crossword puzzle component
-│   └── HangmanComponent/      # Hangman game component
+│   ├── HangmanComponent/      # Hangman game component
+│   └── FlashCardComponent/    # Flashcard component
 ├── manifest.json     # Extension configuration
 └── package.json      # Dependencies
 ```
@@ -169,7 +193,7 @@ This bundles the service worker with esbuild, including all dependencies.
 
 ## 🔧 Technologies Used
 
-- **Chrome Extension APIs**: Manifest V3, Side Panel API, Scripting API, Omnibox API, Notifications API, Storage API, Search API
+- **Chrome Extension APIs**: Manifest V3, Side Panel API, Scripting API, Omnibox API, Notifications API, Storage API, Search API, Context Menus API
 - **Chrome AI APIs**: Built-in Language Model, Summarizer, Language Detector, and Translator
 - **Mozilla Readability**: Article content extraction
 - **linkedom**: Server-side DOM parsing
