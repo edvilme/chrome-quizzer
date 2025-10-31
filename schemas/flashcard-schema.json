@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Flashcard",
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string",
+            "description": "The title of the flashcard."
+        },
+        "content": {
+            "type": "string",
+            "description": "The content or body of the flashcard."
+        },
+        "textExtract": {
+            "type": "string",
+            "description": "Text that was extracted from the source material for this flashcard."
+        }
+    },
+    "required": ["title", "content", "textExtract"],
+    "additionalProperties": false
+}

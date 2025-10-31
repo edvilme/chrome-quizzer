@@ -5,7 +5,7 @@
  * between the extension's components and the Chrome browser.
  */
 
-import { generateQuiz, generateSuggestions, generateWordGames } from "./LanguageModel.js";
+import { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard } from "./LanguageModel.js";
 import { summarizeText } from "./Summarizer.js";
 import { extractTabData } from "./TabExtractor.js";
 import { acquireModel } from "./ModelAcquisition.js";
@@ -179,10 +179,16 @@ chrome.omnibox.onInputEntered.addListener(() => {
   chrome.tabs.create({ url: dashboardUrl });
 });
 
-// Create an alarm to periodically refresh suggestions based on answer history
 chrome.runtime.onInstalled.addListener(() => {
+  // Create an alarm to periodically refresh suggestions based on answer history
   chrome.alarms.clear('refreshSuggestions');
   chrome.alarms.create('refreshSuggestions', { periodInMinutes: 60 });
+  // Add context menu item to open the dashboard
+  chrome.contextMenus.create({
+    id: 'add-flashcard',
+    title: 'Quizzer: Add Flashcard',
+    contexts: ['selection'],
+  });
 });
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
@@ -200,6 +206,31 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
       });
     } catch (err) {
       console.error("Failed to create notification:", err);
+    }
+  }
+});
+
+// Handle context menu clicks
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (info.menuItemId === 'add-flashcard') {
+    const text = info.selectionText || '';
+    let languageModel;
+    try {
+      languageModel = await acquireModel(LanguageModel, {}, 'flashcard-generator');
+    } catch (err) {
+      console.error('Failed to load language model for flashcard generation:', err);
+      return;
+    }
+    try {
+      const newFlashcard = await generateFlashCard(languageModel, text);
+      console.log('Generated flashcard:', newFlashcard);
+      // Store or display the flashcard as needed
+      const existingFlashcards = (await chrome.storage.local.get('flashcards')).flashcards || [];
+      existingFlashcards.push(newFlashcard);
+      await chrome.storage.local.set({ flashcards: existingFlashcards });
+      console.log('Flashcard saved to storage.', existingFlashcards);
+    } catch (err) {
+      console.error('Failed to generate flashcard:', err);
     }
   }
 });

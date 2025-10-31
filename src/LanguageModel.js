@@ -6,6 +6,7 @@
 import quizSchema from '../schemas/quiz-schema.json' assert { type: 'json' };
 import dashboardCategorySchema from '../schemas/dashboard-category-schema.json' assert { type: 'json' };
 import wordGameSchema from '../schemas/word-game-schema.json' assert { type: 'json' };
+import flashcardSchema from '../schemas/flashcard-schema.json' assert { type: 'json' };
 
 import { generateLayout } from 'crossword-layout-generator';
 
@@ -103,4 +104,31 @@ async function generateWordGames(languageModel, articleText) {
 }
 
 
-export { generateQuiz, generateSuggestions, generateWordGames };
+/**
+ * Generates a flashcard based on a given text selection using a language model.
+ *
+ * Clones the provided language model to create an isolated session, prompts it to create a flashcard,
+ * and returns the generated flashcard object. Ensures the session is destroyed after use.
+ *
+ * @async
+ * @param {Object} languageModel - The language model instance to use for generating the flashcard.
+ * @param {string} textSelection - The text selection from which to generate the flashcard.
+ * @returns {Promise<Object>} A promise that resolves to the generated flashcard object.
+ */
+async function generateFlashCard(languageModel, textSelection) {
+  // Clone the language model to avoid interfering with other tasks
+  const session = await languageModel.clone();
+  const promptText = `
+    Create a flashcard based on the following text selection.
+    ${textSelection}
+  `;
+
+  const response = await session.prompt(promptText, {
+    responseConstraint: flashcardSchema
+  });
+
+  await session.destroy();
+  return JSON.parse(response);
+}
+
+export { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard };
