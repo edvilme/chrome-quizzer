@@ -20,10 +20,7 @@ class DrawingComponent extends HTMLElement {
             this.render();
         }
         if (name === "data-score" && oldValue !== newValue) {
-            const scoreElem = this.shadowRoot.querySelector('.score');
-            if (scoreElem) {
-                scoreElem.textContent = newValue;
-            }
+            this.renderScore();
         }
     }
 
@@ -42,6 +39,13 @@ class DrawingComponent extends HTMLElement {
             this.canvas.width = width;
             this.canvas.height = height;
         }
+    }
+
+    renderScore() {
+        const scoreElem = this.shadowRoot.querySelector('.score');
+        if (scoreElem) {
+            scoreElem.textContent = this.getAttribute('data-score') || '';
+        } 
     }
 
     render() {
@@ -114,6 +118,7 @@ class DrawingComponent extends HTMLElement {
     clearCanvas() {
         this.dispatchEvent(new CustomEvent('clear', { bubbles: true, composed: true }));
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.renderScore();
     }
 
     getDrawingData() {
