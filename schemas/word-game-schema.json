@@ -2,19 +2,26 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Word Game Schema",
     "type": "array",
+    "description": "An array of word game clues and answers. Must include at least one clue for each game type: pictionary, hangman, and crossword.",
     "items": {
         "type": "object",
+        "description": "An object representing a word clue and its answer. For pictionary, the answer must be an easy to illustrate word.",
         "properties": {
             "clue": {
                 "type": "string",
-                "description": "Clue that describes the word. Can be a definition, synonym, hint, or sentence to complete."
+                "description": "Clue that describes the word. Can be a definition, synonym, hint, or sentence to complete"
             },
             "answer": {
                 "type": "string",
                 "description": "The answer to the clue. Preferably a single word without spaces or special characters."
+            },
+            "type": {
+                "type": "string",
+                "description": "The type of word game.",
+                "enum": ["pictionary", "hangman", "crossword"]
             }
         },
-        "required": ["clue", "answer"]
+        "required": ["clue", "answer", "type"]
     },
     "maxItems": 10
 }

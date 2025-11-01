@@ -121,24 +121,24 @@ async function handleGames(tabData) {
     elements.crossword.innerHTML = '';
     elements.crossword.appendChild(crosswordComponent);
 
-    const hangmanWords = crossword?.result?.map(entry => entry.answer) || [];
+    const hangmanRandomWord = crossword.result
+      .find(entry => entry.type === 'hangman')?.answer;
 
-    const hangmanRandomWord = hangmanWords.length > 0
-      ? hangmanWords[Math.floor(Math.random() * hangmanWords.length)]
-      : '';
+    const pictionaryRandomWord = crossword.result
+      .find(entry => entry.type === 'pictionary')?.answer;
 
-    const pictionaryRandomWord = hangmanWords.length > 0
-      ? hangmanWords[Math.floor(Math.random() * hangmanWords.length)]
-      : '';
+    if (pictionaryRandomWord) {
+      const pictionaryElement = document.createElement('drawing-component');
+      pictionaryElement.setAttribute('data-prompt', pictionaryRandomWord);
+      elements.drawing.appendChild(pictionaryElement);
+      pictionaryElement.addEventListener('validate', verifyDrawing);
+    }
 
-    const pictionaryElement = document.createElement('drawing-component');
-    pictionaryElement.setAttribute('data-prompt', pictionaryRandomWord);
-    elements.drawing.appendChild(pictionaryElement);
-    pictionaryElement.addEventListener('validate', verifyDrawing);
-
-    const hangmanElement = document.createElement('hangman-component');
-    hangmanElement.setAttribute('data-word', hangmanRandomWord);
-    elements.hangman.appendChild(hangmanElement);
+    if (hangmanRandomWord) {
+      const hangmanElement = document.createElement('hangman-component');
+      hangmanElement.setAttribute('data-word', hangmanRandomWord);
+      elements.hangman.appendChild(hangmanElement);
+    }
 
   } catch (error) {
     console.error("Error generating crossword:", error);

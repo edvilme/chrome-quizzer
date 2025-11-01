@@ -88,7 +88,7 @@ async function generateWordGames(languageModel, articleText) {
   // Clone the language model to avoid interfering with other tasks
   const session = await languageModel.clone();
   const promptText = `
-    Give me some words and their hints based off this article to create a crossword puzzle. 
+    Give me some words and their hints based off this article to create some word games.
     Hints should be concise and informative, and the words should be relevant to the article's content.
     ${articleText}
   `;
