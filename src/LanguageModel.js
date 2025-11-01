@@ -131,4 +131,46 @@ async function generateFlashCard(languageModel, textSelection) {
   return JSON.parse(response);
 }
 
-export { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard };
+async function getPictionaryScore(languageModel, image, description) {
+  // Clone the language model to avoid interfering with other tasks
+  const session = await languageModel.clone();
+  
+  const promptText = `
+    Evaluate how well the provided description matches the content of the image.
+    Consider the accuracy, relevance, and completeness of the description in relation to the image.
+    Provide a score from 0 to 100, where 0 means the description does not match the image at all,
+    and 100 means the description perfectly matches the image.
+  `;
+
+  await session.append([
+    {
+      role: 'user',
+      content: [
+        { type: 'image', data: image },
+        { type: 'text', data: `The prompt for the image was: ${description}` }
+      ]
+    }
+  ]);
+
+  const response = await session.prompt(promptText, {
+    responseConstraint: {
+      type: 'object',
+      properties: {
+        score: {
+          type: 'number',
+          minimum: 0,
+          maximum: 100
+        },
+        reasoning: {
+          type: 'string'
+        }
+      },
+      required: ['score', 'reasoning']
+    }
+  });
+
+  await session.destroy();
+  return response;
+}
+
+export { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard, getPictionaryScore };
