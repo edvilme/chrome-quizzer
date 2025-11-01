@@ -4,6 +4,7 @@
     --placeholder: attr(data-placeholder);
 }
 
+
 :host canvas {
     height: 100%;
     width: 100%;
@@ -30,6 +31,8 @@
 }
 
 button {
+    height: 30px;
+    width: 30px;
     margin-right: 10px;
     padding: 5px 10px;
     font-size: 14px;
@@ -42,4 +45,17 @@ h2 {
     text-align: left;
     color: black;
     flex: 1;
+}
+
+.score {
+    background: var(--red-pill);
+    border-radius: 1000px;
+    padding: 10px;
+    aspect-ratio: 1 / 1;
+}
+.score:empty {
+    display: none;
+}
+:host[data-status="loading"] .score::before {
+    content: "⌛︎";
 }

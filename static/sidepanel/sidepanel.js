@@ -11,8 +11,7 @@ const elements = {
   crossword: document.getElementById('crossword'),
   hangman: document.getElementById('hangman'), 
   flashcards: document.getElementById('flashcards'),
-  //TODO: Replace
-  drawing: document.querySelector('drawing-component')
+  drawing: document.getElementById('drawing')
 };
 const answerHistoryMaxLength = 100;
 
@@ -107,7 +106,7 @@ async function handleSummary(tabData) {
 }
 
 // Function to handle crossword and hangman generation
-async function handleCrossword(tabData) {
+async function handleGames(tabData) {
   try {
     let crosswordResponse = await chrome.runtime.sendMessage({ type: 'generateCrossword', tabData });
     console.log("Crossword response:", crosswordResponse);
@@ -123,12 +122,22 @@ async function handleCrossword(tabData) {
     elements.crossword.appendChild(crosswordComponent);
 
     const hangmanWords = crossword?.result?.map(entry => entry.answer) || [];
-    const randomWord = hangmanWords.length > 0
+
+    const hangmanRandomWord = hangmanWords.length > 0
       ? hangmanWords[Math.floor(Math.random() * hangmanWords.length)]
       : '';
 
+    const pictionaryRandomWord = hangmanWords.length > 0
+      ? hangmanWords[Math.floor(Math.random() * hangmanWords.length)]
+      : '';
+
+    const pictionaryElement = document.createElement('drawing-component');
+    pictionaryElement.setAttribute('data-prompt', pictionaryRandomWord);
+    elements.drawing.appendChild(pictionaryElement);
+    pictionaryElement.addEventListener('validate', verifyDrawing);
+
     const hangmanElement = document.createElement('hangman-component');
-    hangmanElement.setAttribute('data-word', randomWord);
+    hangmanElement.setAttribute('data-word', hangmanRandomWord);
     elements.hangman.appendChild(hangmanElement);
 
   } catch (error) {
@@ -177,6 +186,7 @@ async function populateData() {
   elements.crossword.innerHTML = "";
   elements.score.textContent = "Score: 0";
   elements.hangman.innerHTML = "";
+  elements.drawing.innerHTML = "";
 
   await populateFlashcards();
 
@@ -186,7 +196,7 @@ async function populateData() {
   }
   await Promise.all([
     handleSummary(tabData),
-    handleCrossword(tabData),
+    handleGames(tabData),
     handleQuiz(tabData)
   ]);
 }
@@ -225,33 +235,24 @@ async function verifyDrawing(event){
   const prompt = event.target.getAttribute('data-prompt') || '';
   console.log({drawingData, prompt});
   try {
+    event.target.setAttribute('data-status', 'loading');
     const response = await chrome.runtime.sendMessage({
       type: 'evaluateDrawing',
       drawingData,
       prompt
     });
+    if (chrome.runtime.lastError || !response || !response.success) {
+      event.target.setAttribute('data-status', 'error');
+      throw new Error(response.errorType);
+    }
+    const score = response.score?.score;
+    event.target.setAttribute('data-score', score.toString());
+    event.target.setAttribute('data-status', 'done');
     console.log("Drawing evaluation response:", response);
   } catch (error) {
     console.error("Error evaluating drawing:", error);
   }
-
-  // try {
-  //   const response = await chrome.runtime.sendMessage({
-  //     type: 'evaluateDrawing',
-  //     drawingData,
-  //     prompt
-  //   });
-  //   console.log("Drawing evaluation response:", response);
-  //   if (chrome.runtime.lastError || !response || !response.success) {
-  //     throw new Error(response.errorType);
-  //   }
-  //   alert(`Your drawing was scored: ${response.score}/100\nReasoning: ${response.reasoning}`);
-  // } catch (error) {
-  //   console.error("Error evaluating drawing:", error);
-  // }
 }
-
-elements.drawing.addEventListener('validate', verifyDrawing);
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', populateData);

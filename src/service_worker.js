@@ -167,28 +167,25 @@ async function generateSuggestionsData(message, sender, sendResponse) {
 
 
 async function evaluateDrawing(message, sender, sendResponse) {
-  const { userDrawing, targetWord } = message;
+  const { drawingData, prompt } = message;
+
+  const userDrawingResponse = await fetch(drawingData);
+  const userDrawingBlob = await userDrawingResponse.blob();
+  const userDrawingImageBitmap = await createImageBitmap(userDrawingBlob);
+
+  if (userDrawingImageBitmap.height === 0 || userDrawingImageBitmap.width === 0) {
+    sendResponse({ success: false, error: 'Invalid drawing data', errorType: 'invalid-drawing-data' });
+    return;
+  }
+
   let languageModel;
   try {
     languageModel = await acquireModel(LanguageModel, {
       expectedInputs: [{ type: 'image' }],
-      // expectedInputs: [
-      //   { type: 'image' }
-      // ],
-      // initialPrompts: [
-      //   {
-      //     role: 'system',
-      //     content: `
-      //       You are a Pictionary evaluator. Given a user's drawing and the target word,
-      //       assess how well the drawing represents the word. Provide a score from 0 to 100,
-      //       along with a brief explanation of your reasoning.
-      //     `
-      //   }
-      // ]
     }, 'pictionary-evaluator');
 
-    //const score = await getPictionaryScore(languageModel, userDrawing, targetWord);
-    sendResponse({ success: true, score: 10 });
+    const score = await getPictionaryScore(languageModel, userDrawingImageBitmap, prompt);
+    sendResponse({ success: true, score });
     return score;
   } catch (err) {
     sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });

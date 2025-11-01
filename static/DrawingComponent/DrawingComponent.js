@@ -5,7 +5,7 @@
 
 class DrawingComponent extends HTMLElement {
     static get observedAttributes() {
-        return ["data-prompt"];
+        return ["data-prompt", "data-score"];
     }
 
     constructor() {
@@ -18,6 +18,12 @@ class DrawingComponent extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === "data-prompt" && oldValue !== newValue) {
             this.render();
+        }
+        if (name === "data-score" && oldValue !== newValue) {
+            const scoreElem = this.shadowRoot.querySelector('.score');
+            if (scoreElem) {
+                scoreElem.textContent = newValue;
+            }
         }
     }
 
@@ -53,10 +59,9 @@ class DrawingComponent extends HTMLElement {
         controls.appendChild(clearButton);
         
         const submitButton = document.createElement('button');
-        submitButton.textContent = 'Submit';
+        submitButton.textContent = '?';
         submitButton.addEventListener('click', () => {
             this.dispatchEvent(new CustomEvent('validate', { 
-                detail: { drawingData: this.getDrawingData() },
                 bubbles: true, 
                 composed: true 
             }));
@@ -67,14 +72,16 @@ class DrawingComponent extends HTMLElement {
         prompt.textContent = this.getAttribute('data-prompt');
         controls.appendChild(prompt);
 
+        const score = document.createElement('div');
+        score.classList.add('score');
+        score.textContent = this.getAttribute('data-score');
+        controls.appendChild(score);
+
         this.shadowRoot.appendChild(controls);
 
         // Create and append the canvas element
         this.canvas = document.createElement('canvas');
         this.shadowRoot.appendChild(this.canvas);
-
-        // Optimize canvas dimensions
-        this.optimizeCanvas();
 
         // Reinitialize the drawing context
         this.ctx = this.canvas.getContext('2d');

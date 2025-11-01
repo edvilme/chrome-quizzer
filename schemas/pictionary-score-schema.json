@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Pictionary Score Schema",
+    "type": "object",
+    "properties": {
+        "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "A score from 0 to 100 indicating how well the providing drawing matches the target word."
+        },
+        "reasoning": {
+            "type": "string",
+            "description": "Explanation of the provided image, and differences from the target word."
+        }
+    },
+    "required": ["score", "reasoning"]
+}
