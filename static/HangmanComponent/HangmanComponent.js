@@ -8,6 +8,72 @@ class HangmanComponent extends HTMLElement {
         return ['data-word'];
     }
 
+    static hangmanStages = [
+        // Stage 0: Empty gallows
+        `
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========`,
+        // Stage 1: Head
+        `
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========`,
+        // Stage 2: Body
+        `
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========`,
+        // Stage 3: Left arm
+        `
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========`,
+        // Stage 4: Right arm
+        `
+  +---+
+  |   |
+  O   |
+ /|\\  |
+      |
+      |
+=========`,
+        // Stage 5: Left leg
+        `
+  +---+
+  |   |
+  O   |
+ /|\\  |
+ /    |
+      |
+=========`,
+        // Stage 6: Right leg (game over)
+        `
+  +---+
+  |   |
+  O   |
+ /|\\  |
+ / \\  |
+      |
+=========`
+    ];
+
     incorrectAttempts = 0;
 
     constructor() {
@@ -28,6 +94,12 @@ class HangmanComponent extends HTMLElement {
 
         const word = this.getAttribute('data-word');
         this.incorrectAttempts = 0;
+
+        // Add ASCII art display
+        const asciiArtContainer = document.createElement('pre');
+        asciiArtContainer.classList.add('ascii-art');
+        asciiArtContainer.textContent = HangmanComponent.hangmanStages[0];
+        this.shadowRoot.appendChild(asciiArtContainer);
 
         const wordContainer = document.createElement('div');
         wordContainer.classList.add('word-container');
@@ -63,6 +135,13 @@ class HangmanComponent extends HTMLElement {
         this.shadowRoot.appendChild(linkElem);
     }
 
+    updateAsciiArt() {
+        const asciiArtContainer = this.shadowRoot.querySelector('.ascii-art');
+        if (asciiArtContainer) {
+            asciiArtContainer.textContent = HangmanComponent.hangmanStages[this.incorrectAttempts];
+        }
+    }
+
     handleLetterGuess(button, letter) {
         button.disabled = true;
         const correctCells = this.shadowRoot.querySelectorAll(`.word-container > div[data-answer='${letter}']`);
@@ -75,6 +154,7 @@ class HangmanComponent extends HTMLElement {
             // Handle incorrect guess (e.g., decrement attempts, update hangman drawing)
             button.classList.add('incorrect');
             this.incorrectAttempts++;
+            this.updateAsciiArt();
             const progressBar = this.shadowRoot.querySelector('progress');
             progressBar.value = this.incorrectAttempts;
             if (this.incorrectAttempts >= HangmanComponent.maxAttempts) {

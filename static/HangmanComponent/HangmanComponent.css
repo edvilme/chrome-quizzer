@@ -3,6 +3,19 @@
     --cell-size: 2rem;
 }
 
+.ascii-art {
+    font-family: monospace;
+    font-size: 0.875rem;
+    line-height: 1.2;
+    margin: 0 0 1rem 0;
+    padding: 0.5rem;
+    background: var(--bg-secondary, #f6f8fa);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow-x: auto;
+    white-space: pre;
+}
+
 .word-container {
     display: flex;
     overflow: auto;
