@@ -138,7 +138,8 @@ class HangmanComponent extends HTMLElement {
     updateAsciiArt() {
         const asciiArtContainer = this.shadowRoot.querySelector('.ascii-art');
         if (asciiArtContainer) {
-            asciiArtContainer.textContent = HangmanComponent.hangmanStages[this.incorrectAttempts];
+            const stageIndex = Math.min(this.incorrectAttempts, HangmanComponent.hangmanStages.length - 1);
+            asciiArtContainer.textContent = HangmanComponent.hangmanStages[stageIndex];
         }
     }
 
