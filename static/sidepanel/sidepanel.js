@@ -10,7 +10,8 @@ const elements = {
   score: document.getElementById('score'),
   crossword: document.getElementById('crossword'),
   hangman: document.getElementById('hangman'), 
-  flashcards: document.getElementById('flashcards')
+  flashcards: document.getElementById('flashcards'),
+  drawing: document.getElementById('drawing')
 };
 const answerHistoryMaxLength = 100;
 
@@ -105,7 +106,7 @@ async function handleSummary(tabData) {
 }
 
 // Function to handle crossword and hangman generation
-async function handleCrossword(tabData) {
+async function handleGames(tabData) {
   try {
     let crosswordResponse = await chrome.runtime.sendMessage({ type: 'generateCrossword', tabData });
     console.log("Crossword response:", crosswordResponse);
@@ -120,14 +121,24 @@ async function handleCrossword(tabData) {
     elements.crossword.innerHTML = '';
     elements.crossword.appendChild(crosswordComponent);
 
-    const hangmanWords = crossword?.result?.map(entry => entry.answer) || [];
-    const randomWord = hangmanWords.length > 0
-      ? hangmanWords[Math.floor(Math.random() * hangmanWords.length)]
-      : '';
+    const hangmanRandomWord = crossword.result
+      .find(entry => entry.type === 'hangman')?.answer;
 
-    const hangmanElement = document.createElement('hangman-component');
-    hangmanElement.setAttribute('data-word', randomWord);
-    elements.hangman.appendChild(hangmanElement);
+    const pictionaryRandomWord = crossword.result
+      .find(entry => entry.type === 'pictionary')?.answer;
+
+    if (pictionaryRandomWord) {
+      const pictionaryElement = document.createElement('drawing-component');
+      pictionaryElement.setAttribute('data-prompt', pictionaryRandomWord);
+      elements.drawing.appendChild(pictionaryElement);
+      pictionaryElement.addEventListener('validate', verifyDrawing);
+    }
+
+    if (hangmanRandomWord) {
+      const hangmanElement = document.createElement('hangman-component');
+      hangmanElement.setAttribute('data-word', hangmanRandomWord);
+      elements.hangman.appendChild(hangmanElement);
+    }
 
   } catch (error) {
     console.error("Error generating crossword:", error);
@@ -175,6 +186,7 @@ async function populateData() {
   elements.crossword.innerHTML = "";
   elements.score.textContent = "Score: 0";
   elements.hangman.innerHTML = "";
+  elements.drawing.innerHTML = "";
 
   await populateFlashcards();
 
@@ -184,7 +196,7 @@ async function populateData() {
   }
   await Promise.all([
     handleSummary(tabData),
-    handleCrossword(tabData),
+    handleGames(tabData),
     handleQuiz(tabData)
   ]);
 }
@@ -215,6 +227,30 @@ async function populateFlashcards() {
       elements.flashcards.removeChild(flashcardElement);
       await deleteFlashCard({ title, content, textExtract });
     });
+  }
+}
+
+async function verifyDrawing(event){
+  const drawingData = event.target.getDrawingData();
+  const prompt = event.target.getAttribute('data-prompt') || '';
+  console.log({drawingData, prompt});
+  try {
+    event.target.setAttribute('data-status', 'loading');
+    const response = await chrome.runtime.sendMessage({
+      type: 'evaluateDrawing',
+      drawingData,
+      prompt
+    });
+    if (chrome.runtime.lastError || !response || !response.success) {
+      event.target.setAttribute('data-status', 'error');
+      throw new Error(response.errorType);
+    }
+    const score = response.score?.score;
+    event.target.setAttribute('data-score', score.toString());
+    event.target.setAttribute('data-status', 'done');
+    console.log("Drawing evaluation response:", response);
+  } catch (error) {
+    console.error("Error evaluating drawing:", error);
   }
 }
 

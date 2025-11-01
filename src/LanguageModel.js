@@ -7,6 +7,7 @@ import quizSchema from '../schemas/quiz-schema.json' assert { type: 'json' };
 import dashboardCategorySchema from '../schemas/dashboard-category-schema.json' assert { type: 'json' };
 import wordGameSchema from '../schemas/word-game-schema.json' assert { type: 'json' };
 import flashcardSchema from '../schemas/flashcard-schema.json' assert { type: 'json' };
+import pictionaryEvaluationSchema from '../schemas/pictionary-score-schema.json' assert { type: 'json' };
 
 import { generateLayout } from 'crossword-layout-generator';
 
@@ -87,7 +88,7 @@ async function generateWordGames(languageModel, articleText) {
   // Clone the language model to avoid interfering with other tasks
   const session = await languageModel.clone();
   const promptText = `
-    Give me some words and their hints based off this article to create a crossword puzzle. 
+    Give me some words and their hints based off this article to create some word games.
     Hints should be concise and informative, and the words should be relevant to the article's content.
     ${articleText}
   `;
@@ -131,4 +132,33 @@ async function generateFlashCard(languageModel, textSelection) {
   return JSON.parse(response);
 }
 
-export { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard };
+async function getPictionaryScore(languageModel, image, description) {
+  // Clone the language model to avoid interfering with other tasks
+  const session = await languageModel.clone();
+  
+  const promptText = `
+    Evaluate how well the provided description matches the content of the drawing.
+    Consider the accuracy, relevance, and completeness of the description in relation to the drawing.
+    Provide a score from 0 to 100, where 0 means the description does not match the drawing at all,
+    and 100 means the description perfectly matches the drawing.
+  `;
+
+  await session.append([
+    {
+      role: 'user',
+      content: [
+        { type: 'image', value: image },
+        { type: 'text', value: `The prompt for the image was: ${description}` }
+      ]
+    }
+  ]);
+
+  const response = await session.prompt(promptText, {
+    responseConstraint: pictionaryEvaluationSchema
+  });
+
+  await session.destroy();
+  return JSON.parse(response);
+}
+
+export { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard, getPictionaryScore };

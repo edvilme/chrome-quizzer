@@ -5,7 +5,7 @@
  * between the extension's components and the Chrome browser.
  */
 
-import { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard } from "./LanguageModel.js";
+import { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard, getPictionaryScore } from "./LanguageModel.js";
 import { summarizeText } from "./Summarizer.js";
 import { extractTabData } from "./TabExtractor.js";
 import { acquireModel } from "./ModelAcquisition.js";
@@ -165,6 +165,34 @@ async function generateSuggestionsData(message, sender, sendResponse) {
   return await preloadSuggestionsData(sendResponse);
 }
 
+
+async function evaluateDrawing(message, sender, sendResponse) {
+  const { drawingData, prompt } = message;
+
+  const userDrawingResponse = await fetch(drawingData);
+  const userDrawingBlob = await userDrawingResponse.blob();
+  const userDrawingImageBitmap = await createImageBitmap(userDrawingBlob);
+
+  if (userDrawingImageBitmap.height === 0 || userDrawingImageBitmap.width === 0) {
+    sendResponse({ success: false, error: 'Invalid drawing data', errorType: 'invalid-drawing-data' });
+    return;
+  }
+
+  let languageModel;
+  try {
+    languageModel = await acquireModel(LanguageModel, {
+      expectedInputs: [{ type: 'image' }],
+    }, 'pictionary-evaluator');
+
+    const score = await getPictionaryScore(languageModel, userDrawingImageBitmap, prompt);
+    sendResponse({ success: true, score });
+    return score;
+  } catch (err) {
+    sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
+    return;
+  }
+}
+
 // Allows users to open the side panel by clicking on the action toolbar icon
 // Prefer the declarative behavior, and also register an explicit click handler
 // as a fallback for environments that don't open the panel automatically.
@@ -272,6 +300,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const tabData = message.tabData;
     generateCrosswordData(tabData, message, sender, sendResponse).then((crosswordLayout) => {
       console.log("Crossword generated:", crosswordLayout);
+    });
+    return true; // Indicate that we will respond asynchronously
+  }
+  if (message?.type == 'evaluateDrawing') {
+    console.log("Evaluating drawing for message:", message);
+    evaluateDrawing(message, sender, sendResponse).then((score) => {
+      console.log("Drawing evaluated, score:", score);
     });
     return true; // Indicate that we will respond asynchronously
   }
