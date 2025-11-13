@@ -40,6 +40,7 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 ## ✨ Features
 
 - **📖 Smart Article Extraction** - Automatically extracts main content from web pages using Mozilla's Readability library
+- **📄 PDF Support** - Extract text from PDF documents using Mozilla's PDF.js for quiz generation
 - **🌐 Automatic Language Detection & Translation** - Detects article language and translates non-English content to English for consistent AI processing
 - **🤖 On-Device AI** - Leverages Chrome's built-in AI APIs (no external API keys or internet required for AI)
   - AI Summarizer for concise article summaries
@@ -102,7 +103,7 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 
 ### Side Panel Features
 
-1. **Navigate to any article** on the web (blog posts, news articles, documentation, etc.) in any language
+1. **Navigate to any article or PDF** on the web (blog posts, news articles, documentation, PDF files, etc.) in any language
 2. **Click the Chrome Quizzer icon** in your toolbar to open the side panel
 3. **Wait for processing** - The extension will:
    - Extract the article content
@@ -142,9 +143,10 @@ chrome-quizzer/
 │   └── answer-schema.json
 ├── src/              # Source code
 │   ├── service_worker.js      # Background script (AI processing)
+│   ├── pdf_extractor.js       # PDF text extraction using PDF.js
 │   ├── LanguageModel.js       # Quiz, crossword, and suggestion generation
 │   ├── Summarizer.js          # Article summarization
-│   ├── TabExtractor.js        # Content extraction
+│   ├── TabExtractor.js        # Content extraction (HTML & PDF)
 │   ├── LanguageDetector.js    # Language detection
 │   └── ModelAcquisition.js    # AI model management
 ├── static/           # UI components
@@ -163,7 +165,9 @@ chrome-quizzer/
 npm run build
 ```
 
-This bundles the service worker with esbuild, including all dependencies.
+This bundles both the service worker and PDF extractor with esbuild:
+- `dist/service_worker.js` - Main extension background script
+- `dist/pdf_extractor.js` - PDF text extraction module (injected when needed)
 
 ### Debugging
 
@@ -175,6 +179,7 @@ This bundles the service worker with esbuild, including all dependencies.
 - **Chrome Extension APIs**: Manifest V3, Side Panel API, Scripting API, Omnibox API, Notifications API, Storage API, Search API
 - **Chrome AI APIs**: Built-in Language Model, Summarizer, Language Detector, and Translator
 - **Mozilla Readability**: Article content extraction
+- **Mozilla PDF.js**: PDF text extraction
 - **linkedom**: Server-side DOM parsing
 - **crossword-layout-generator**: Crossword puzzle layout generation
 - **esbuild**: Fast bundling
@@ -189,8 +194,9 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 
 ## ⚠️ Known Limitations
 
-- Only works on pages with readable article content
+- Only works on pages with readable article content or PDF documents
 - Requires Chrome's experimental AI features to be enabled
 - AI models need to be downloaded on first use (may take a few minutes)
 - Quiz quality depends on article content and AI model capabilities
 - Non-English articles are automatically translated to English, which may affect nuance and context in quiz generation
+- PDF text extraction may not work perfectly with complex layouts, scanned documents, or image-based PDFs
