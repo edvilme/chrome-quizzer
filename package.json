@@ -11,13 +11,16 @@
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
     "crossword-layout-generator": "^0.1.1",
-    "linkedom": "^0.18.12"
+    "linkedom": "^0.18.12",
+    "pdfjs-dist": "^4.10.38"
   },
   "devDependencies": {
     "esbuild": "^0.25.10"
   },
   "scripts": {
-    "build": "esbuild src/service_worker.js --bundle --minify --sourcemap --outdir=dist && npm run zip",
+    "build": "npm run build:service-worker && npm run build:pdf-extractor && npm run zip",
+    "build:service-worker": "esbuild src/service_worker.js --bundle --sourcemap --outdir=dist --format=esm --keep-names",
+    "build:pdf-extractor": "esbuild src/pdf_extractor.js --bundle --sourcemap --outfile=dist/pdf_extractor.js --format=iife",
     "zip": "zip -r chrome-quizzer-$npm_package_version.zip . -x \"node_modules/*\" \"src/*\" \"*.zip\" \".git/*\""
   }
 }

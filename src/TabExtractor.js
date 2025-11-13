@@ -9,11 +9,41 @@ import { DOMParser } from "linkedom";
 import { acquireModel } from "./ModelAcquisition";
 import { detectLanguage } from "./LanguageDetector";
 
+// These are special browser-specific protocols that cannot be scraped
+const internalPagePrefixes = [
+  'chrome://',
+  'chrome-extension://',
+  'edge://',
+  'brave://',
+  'arc://',
+  'about:'
+];
+
 class TabExtractionError extends Error {
   constructor(message) {
     super(message);
     this.name = "TabExtractionError";
   }
+}
+
+async function extractTabDom(){
+  const contentType = document.contentType || '';
+  // If HTML
+  if (contentType.includes('html') || contentType.includes('text')) {
+    return document.documentElement.outerHTML;
+  }
+  // If PDF - dynamically load PDF.js in the webpage context
+  if (contentType.includes('pdf')){
+    try {
+      const fullText = await window.__extractPdfText();
+      // Wrap in HTML structure for consistency
+      return `<html><head><title>PDF Document</title></head><body><article><div class="pdf-content">${fullText.trim()}</div></article></body></html>`;
+    } catch (error) {
+      console.error('Error extracting PDF text:', error);
+      return `<html><body>Error parsing PDF: ${error.message}</body></html>`;
+    }
+  }
+  return null;
 }
 
 /**
@@ -29,42 +59,30 @@ async function extractTabData() {
   let [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
   
   // Validate tab exists and has valid URL
-  if (!tab || !tab.url || !tab.title) {
+  if (!tab || !tab.url || !tab.title || internalPagePrefixes.some(prefix => tab.url.startsWith(prefix))) {
     throw new TabExtractionError('No valid active tab found');
   }
-  
-  // Check if it's a browser internal page - send error if not a webpage
-  // These are special browser-specific protocols that cannot be scraped
-  const internalPagePrefixes = [
-    'chrome://',
-    'chrome-extension://',
-    'edge://',
-    'brave://',
-    'arc://',
-    'about:'
-  ];
-  
-  if (internalPagePrefixes.some(prefix => tab.url.startsWith(prefix))) {
-    throw new TabExtractionError('Page not readerable');
-  }
-  
+
+  // Get favicon URL
+  const favicon = tab.favIconUrl || null;
+
   // Extract the DOM from the tab
+  await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    files: ['dist/pdf_extractor.js']
+  });
   const tabDOM = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    func: () => {
-      // Check if the document is actually an HTML document
-      if (document.contentType && !document.contentType.includes('html') && !document.contentType.includes('text')) {
-        return null;
-      }
-      return document.documentElement.outerHTML;
-    },
+    func: extractTabDom
   });
   
+  console.log('Extracted tab DOM:', tabDOM);
+
   const domContent = tabDOM[0].result;
   
-  // If we couldn't extract content (non-HTML document), throw error
+  // If we couldn't extract content (unsupported document type), throw error
   if (!domContent) {
-    throw new TabExtractionError('Page not readerable');
+    throw new TabExtractionError('Page not readerable - content could not be extracted');
   }
   
   // Parse the DOM
@@ -74,9 +92,7 @@ async function extractTabData() {
   if (!isProbablyReaderable(dom)) {
     throw new TabExtractionError('Page not readerable');
   }
-  
-  const favicon = tab.favIconUrl || null;
-  
+    
   // Extract article content
   const article = new Readability(dom).parse();
 
