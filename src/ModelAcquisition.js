@@ -54,4 +54,4 @@ async function acquireModel(ModelClass, options = {}, name = ModelClass.name) {
   return modelsCache[name]
 }
 
-export { acquireModel };
+export { acquireModel, ModelAcquisitionError };
