@@ -8,7 +8,7 @@
 import { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard, getPictionaryScore } from "./LanguageModel.js";
 import { summarizeText } from "./Summarizer.js";
 import { extractTabData } from "./TabExtractor.js";
-import { acquireModel } from "./ModelAcquisition.js";
+import { acquireModel, ModelAcquisitionError } from "./ModelAcquisition.js";
 
 /**
  * Extracts data from the current browser tab.
@@ -39,25 +39,17 @@ async function getTabData(message, sender, sendResponse) {
  */
 async function generateSummary(tabData, message, sender, sendResponse) {
   const { article } = tabData;
-  let summarizer;
-  try {
-    summarizer = await acquireModel(Summarizer, {
-      type: "tldr",
-      length: "long",
-      format: "markdown"
-    }, 'summarizer');
-  } catch (err) {
-    sendResponse({ success: false, error: 'Failed to load summarization model', errorType: 'model-loading-error' });
-    return;
-  }
-
   let summary;
   try {
-    summary = await summarizeText(summarizer, article.textContent);
+    summary = await summarizeText(article.textContent);
     sendResponse({ success: true, summary });
     return summary;
   } catch (err) {
-    sendResponse({ success: false, error: 'Failed to generate summary', errorType: 'summary-error' });
+    if (err instanceof ModelAcquisitionError) {
+      sendResponse({ success: false, error: 'Failed to load summarization model', errorType: 'model-loading-error' });
+    } else {
+      sendResponse({ success: false, error: 'Failed to generate summary', errorType: 'summary-error' });
+    }
     return;
   }
 }
@@ -72,20 +64,16 @@ async function generateSummary(tabData, message, sender, sendResponse) {
  */
 async function generateQuizData(tabData, message, sender, sendResponse) {
   const { article } = tabData;
-  let languageModel;
-  try {
-    languageModel = await acquireModel(LanguageModel, {}, 'quiz-generator');
-  } catch (err) {
-    sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
-    return;
-  }
-
   let quiz;
   try {
-    quiz = await generateQuiz(languageModel, article.textContent);
+    quiz = await generateQuiz(article.textContent);
     sendResponse({ success: true, quiz });
     return quiz;
   } catch (err) {
+    if (err instanceof ModelAcquisitionError) {
+      sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
+      return;
+    }
     sendResponse({ success: false, error: 'Failed to generate quiz', errorType: 'quiz-error' });
     return;
   }
@@ -97,24 +85,20 @@ async function generateQuizData(tabData, message, sender, sendResponse) {
  * @returns {Promise<Object|null>} - The preloaded suggestions or null in case of an error.
  */
 async function preloadSuggestionsData(callback = () => {}) {
-  let languageModel;
-  try {
-    languageModel = await acquireModel(LanguageModel, {}, 'suggestion-generator');
-  } catch (err) {
-    callback({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
-    return;
-  }
   const answers = (await chrome.storage.local.get('answerHistory')).answerHistory || [];
-
   let followupSuggestions;
   try {
-    followupSuggestions = await generateSuggestions(languageModel, answers);
+    followupSuggestions = await generateSuggestions(answers);
     console.log("Generated follow-up suggestions:", followupSuggestions);
     // Cache the generated suggestions
     await chrome.storage.local.set({ followupSuggestions });
     callback({ success: true, suggestions: followupSuggestions });
     return followupSuggestions;
   } catch (err) {
+    if (err instanceof ModelAcquisitionError) {
+      callback({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
+      return;
+    }
     callback({ success: false, error: 'Failed to generate suggestions', errorType: 'suggestions-error' });
     return;
   }
@@ -130,19 +114,16 @@ async function preloadSuggestionsData(callback = () => {}) {
  */
 async function generateCrosswordData(tabData, message, sender, sendResponse) {
   const { article } = tabData;
-  let languageModel;
-  try {
-    languageModel = await acquireModel(LanguageModel, {}, 'crossword-generator');
-  } catch (err) {
-    sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
-    return;
-  }
   let crosswordLayout;
   try {
-    crosswordLayout = await generateWordGames(languageModel, article.textContent);
+    crosswordLayout = await generateWordGames(article.textContent);
     sendResponse({ success: true, crosswordLayout });
     return crosswordLayout;
   } catch (err) {
+    if (err instanceof ModelAcquisitionError) {
+      sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
+      return;
+    }
     sendResponse({ success: false, error: 'Failed to generate crossword', errorType: 'crossword-error' });
     return;
   }
@@ -178,17 +159,16 @@ async function evaluateDrawing(message, sender, sendResponse) {
     return;
   }
 
-  let languageModel;
   try {
-    languageModel = await acquireModel(LanguageModel, {
-      expectedInputs: [{ type: 'image' }],
-    }, 'pictionary-evaluator');
-
-    const score = await getPictionaryScore(languageModel, userDrawingImageBitmap, prompt);
+    const score = await getPictionaryScore(userDrawingImageBitmap, prompt);
     sendResponse({ success: true, score });
     return score;
   } catch (err) {
-    sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
+    if (err instanceof ModelAcquisitionError) {
+      sendResponse({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
+      return;
+    }
+    sendResponse({ success: false, error: 'Failed to evaluate drawing', errorType: 'drawing-evaluation-error' });
     return;
   }
 }
@@ -243,15 +223,8 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === 'add-flashcard') {
     const text = info.selectionText || '';
-    let languageModel;
     try {
-      languageModel = await acquireModel(LanguageModel, {}, 'flashcard-generator');
-    } catch (err) {
-      console.error('Failed to load language model for flashcard generation:', err);
-      return;
-    }
-    try {
-      const newFlashcard = await generateFlashCard(languageModel, text);
+      const newFlashcard = await generateFlashCard(text);
       console.log('Generated flashcard:', newFlashcard);
       // Store or display the flashcard as needed
       const existingFlashcards = (await chrome.storage.local.get('flashcards')).flashcards || [];
@@ -259,6 +232,10 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       await chrome.storage.local.set({ flashcards: existingFlashcards });
       console.log('Flashcard saved to storage.', existingFlashcards);
     } catch (err) {
+      if (err instanceof ModelAcquisitionError) {
+        console.error('Failed to load language model for flashcard generation:', err);
+        return;
+      }
       console.error('Failed to generate flashcard:', err);
     }
   }

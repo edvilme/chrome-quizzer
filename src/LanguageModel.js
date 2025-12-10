@@ -24,12 +24,12 @@ Consider all of the past answers I provide to you, and generate suggestions acco
 
 /**
  * Generates a quiz from article text using the language model.
- * @param {Object} languageModel - The language model instance
  * @param {string} articleText - The article content to generate quiz from
  * @returns {Promise<Object>} The generated quiz object
  * @throws {Error} If quiz generation or parsing fails
  */
-async function generateQuiz(languageModel, articleText) {
+async function generateQuiz(articleText) {
+  const languageModel = await acquireModel(LanguageModel, {}, 'quiz-generator');
   // Clone the language model to avoid interfering with other tasks
   const session = await languageModel.clone();
   const promptText = `
@@ -47,12 +47,12 @@ async function generateQuiz(languageModel, articleText) {
 
 /**
  * Generates personalized suggestions based on past quiz answers.
- * @param {Object} languageModel - The language model instance
- * @param {Array} answers - Array of past quiz answers
+ * @param {Array<Object>} answers - Array of past quiz answers
  * @returns {Promise<Object>} The generated suggestions object
  * @throws {Error} If suggestion generation or parsing fails
  */
-async function generateSuggestions(languageModel, answers) {
+async function generateSuggestions(answers) {
+  const languageModel = await acquireModel(LanguageModel, {}, 'suggestion-generator');
   // Clone the language model to avoid interfering with other tasks
   const session = await languageModel.clone();
   await session.append({
@@ -79,12 +79,12 @@ async function generateSuggestions(languageModel, answers) {
 
 /**
  * Generates a crossword puzzle layout from article text using the language model.
- * @param {Object} languageModel - The language model instance
  * @param {string} articleText - The article content to generate crossword from
  * @returns {Promise<Object>} The generated word game layout
  * @throws {Error} If crossword generation or parsing fails
  */
-async function generateWordGames(languageModel, articleText) {
+async function generateWordGames(articleText) {
+  const languageModel = await acquireModel(LanguageModel, {}, 'crossword-generator');
   // Clone the language model to avoid interfering with other tasks
   const session = await languageModel.clone();
   const promptText = `
@@ -112,11 +112,11 @@ async function generateWordGames(languageModel, articleText) {
  * and returns the generated flashcard object. Ensures the session is destroyed after use.
  *
  * @async
- * @param {Object} languageModel - The language model instance to use for generating the flashcard.
  * @param {string} textSelection - The text selection from which to generate the flashcard.
  * @returns {Promise<Object>} A promise that resolves to the generated flashcard object.
  */
-async function generateFlashCard(languageModel, textSelection) {
+async function generateFlashCard(textSelection) {
+  const languageModel = await acquireModel(LanguageModel, {}, 'flashcard-generator');
   // Clone the language model to avoid interfering with other tasks
   const session = await languageModel.clone();
   const promptText = `
@@ -132,7 +132,10 @@ async function generateFlashCard(languageModel, textSelection) {
   return JSON.parse(response);
 }
 
-async function getPictionaryScore(languageModel, image, description) {
+async function getPictionaryScore(image, description) {
+  const languageModel = await acquireModel(LanguageModel, {
+    expectedInputs: [{ type: 'image' }],
+  }, 'pictionary-evaluator');
   // Clone the language model to avoid interfering with other tasks
   const session = await languageModel.clone();
   
