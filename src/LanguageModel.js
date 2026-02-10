@@ -55,22 +55,20 @@ async function generateQuiz(languageModel, articleText) {
 async function generateSuggestions(languageModel, answers) {
   // Clone the language model to avoid interfering with other tasks
   const session = await languageModel.clone();
-  await session.append({
-    role: 'system',
-    content: SUGGESTIONS_INITIAL_PROMPT
-  });
-  await session.append(
-    answers
-      .filter(answer => answer && answer.quizCategory)
-      .map(({correctAnswer, question, selectedAnswer, isCorrect}) => {
-        return {
-          role: 'user',
-          content: JSON.stringify({correctAnswer, question, selectedAnswer, isCorrect})
-        };
-      })
-  );
 
-  const response = await session.prompt("Generate suggestions based on the provided quiz data.", {
+  const answerMessages = answers
+    .filter(answer => answer && answer.quizCategory)
+    .map(({correctAnswer, question, selectedAnswer, isCorrect}) => {
+      return {
+        role: 'user',
+        content: JSON.stringify({correctAnswer, question, selectedAnswer, isCorrect})
+      };
+    });
+
+  const response = await session.prompt([
+    ...answerMessages,
+    { role: 'user', content: "Generate suggestions based on the provided quiz data." }
+  ], {
     responseConstraint: dashboardCategorySchema
   });
   await session.destroy();
@@ -143,17 +141,19 @@ async function getPictionaryScore(languageModel, image, description) {
     and 100 means the description perfectly matches the drawing.
   `;
 
-  await session.append([
+  const response = await session.prompt([
     {
       role: 'user',
       content: [
         { type: 'image', value: image },
         { type: 'text', value: `The prompt for the image was: ${description}` }
       ]
+    },
+    {
+      role: 'user',
+      content: promptText
     }
-  ]);
-
-  const response = await session.prompt(promptText, {
+  ], {
     responseConstraint: pictionaryEvaluationSchema
   });
 
@@ -161,4 +161,4 @@ async function getPictionaryScore(languageModel, image, description) {
   return JSON.parse(response);
 }
 
-export { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard, getPictionaryScore };
+export { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard, getPictionaryScore, SUGGESTIONS_INITIAL_PROMPT };
