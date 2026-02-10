@@ -66,14 +66,13 @@ A Chrome extension that automatically generates comprehension quizzes from any a
 
 ## 🚀 Requirements
 
-- **Chrome 129+** with AI features enabled
+- **Chrome 138+** with built-in AI features
 - Enable Chrome's AI features:
-  1. Navigate to `chrome://flags/#optimization-guide-on-device-model`
-  2. Set to "Enabled BypassPerfRequirement"
-  3. Navigate to `chrome://flags/#prompt-api-for-gemini-nano`
-  4. Set to "Enabled"
-  5. Restart Chrome
-  6. Confirm AI models are available at `chrome://components/` (look for "Optimization Guide On Device Model")
+  1. Navigate to `chrome://flags/#prompt-api-for-gemini-nano`
+  2. Set to "Enabled"
+  3. Restart Chrome
+  4. Confirm AI models are available at `chrome://components/` (look for "Optimization Guide On Device Model")
+  5. On supported devices (22 GB free disk, 4+ GB VRAM), models download automatically on first use
 
 ## 📥 Installation
 

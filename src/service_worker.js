@@ -5,7 +5,7 @@
  * between the extension's components and the Chrome browser.
  */
 
-import { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard, getPictionaryScore } from "./LanguageModel.js";
+import { generateQuiz, generateSuggestions, generateWordGames, generateFlashCard, getPictionaryScore, SUGGESTIONS_INITIAL_PROMPT } from "./LanguageModel.js";
 import { summarizeText } from "./Summarizer.js";
 import { extractTabData } from "./TabExtractor.js";
 import { acquireModel } from "./ModelAcquisition.js";
@@ -99,7 +99,9 @@ async function generateQuizData(tabData, message, sender, sendResponse) {
 async function preloadSuggestionsData(callback = () => {}) {
   let languageModel;
   try {
-    languageModel = await acquireModel(LanguageModel, {}, 'suggestion-generator');
+    languageModel = await acquireModel(LanguageModel, {
+      initialPrompts: [{ role: 'system', content: SUGGESTIONS_INITIAL_PROMPT }]
+    }, 'suggestion-generator');
   } catch (err) {
     callback({ success: false, error: 'Failed to load language model', errorType: 'model-loading-error' });
     return;
