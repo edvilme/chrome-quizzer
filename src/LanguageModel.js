@@ -146,12 +146,9 @@ async function getPictionaryScore(languageModel, image, description) {
       role: 'user',
       content: [
         { type: 'image', value: image },
-        { type: 'text', value: `The prompt for the image was: ${description}` }
+        { type: 'text', value: `The prompt for the image was: ${description}` },
+        { type: 'text', value: promptText }
       ]
-    },
-    {
-      role: 'user',
-      content: promptText
     }
   ], {
     responseConstraint: pictionaryEvaluationSchema
